@@ -10,5 +10,7 @@ import (
 func main() {
 	r := gin.Default()
 	r.POST("/api/check/task", controller.InitRouter)
+	r.GET("/api/search", controller.Search)
+
 	r.Run(":9393") // listen and serve
 }
