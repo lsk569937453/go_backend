@@ -4,7 +4,6 @@ import (
 	"go_backend/controller"
 
 	"github.com/gin-gonic/gin"
-
 )
 
 func main() {
@@ -12,5 +11,5 @@ func main() {
 	r.POST("/api/check/task", controller.InitRouter)
 	r.GET("/api/search", controller.Search)
 
-	r.Run(":9393") // listen and serve
+	r.Run(":9394") // listen and serve
 }
