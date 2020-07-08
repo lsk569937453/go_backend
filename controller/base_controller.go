@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/iris-contrib/go.uuid"
+
 )
 
 type BaseController struct {
@@ -53,9 +54,6 @@ func Search(c *gin.Context) {
 		key := rand.Intn(100000)
 
 		searRes.KeyWord = fmt.Sprintf("%d", key)
-		// Creating UUID Version 4
-		// panic on error
-		u1 := uuid.Must(uuid.NewV4())
 
 		// or error handling
 		u2, err := uuid.NewV4()
