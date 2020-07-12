@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"go_backend/dao"
 	"go_backend/vojo"
 	"math/rand"
 	"net/http"
@@ -67,8 +68,10 @@ func Search(c *gin.Context) {
 
 	}
 
+	tt := dao.GetTaskByUserId()
+	fmt.Printf("%s", tt)
 	res.Message = slice
-	fmt.Println(res) // 正常输出msg内容
+	// fmt.Println(res) // 正常输出msg内容
 	c.JSON(http.StatusOK, res)
 
 }
