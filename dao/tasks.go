@@ -3,6 +3,7 @@ package dao
 import (
 	"fmt"
 	"go_backend/vojo"
+
 )
 
 func Insert() {
@@ -23,7 +24,7 @@ func Insert() {
 func GetTaskById() []vojo.TasksDao {
 	sqlStr := "SELECT id,task_name, task_cron, url,user_id FROM tasks"
 	var users []vojo.TasksDao
-	err := CronDb.Select(&users, sqlStr, 0)
+	err := CronDb.Select(&users, sqlStr)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 
