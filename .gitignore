@@ -1,3 +1,4 @@
 _debug_bin
 .vscode
 vendor/
+.idea/

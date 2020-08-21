@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go_backend/dao"
 	"go_backend/vojo"
+	"go_backend/log"
 	"math/rand"
 	"net/http"
 
@@ -59,7 +60,7 @@ func Search(c *gin.Context) {
 		// or error handling
 		u2, err := uuid.NewV4()
 		if err != nil {
-			fmt.Printf("Something went wrong: %s", err)
+			log.Error("Something went wrong: %s", err)
 			return
 		}
 
@@ -69,7 +70,7 @@ func Search(c *gin.Context) {
 	}
 
 	tt := dao.GetTaskByUserId()
-	fmt.Printf("%s", tt)
+	log.Info("%s", tt)
 	res.Message = slice
 	// fmt.Println(res) // 正常输出msg内容
 	c.JSON(http.StatusOK, res)

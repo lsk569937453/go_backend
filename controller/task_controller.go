@@ -1,13 +1,12 @@
 package controller
 
 import (
-	"fmt"
 	"go_backend/dao"
+	"go_backend/log"
 	"go_backend/vojo"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
 )
 
 func TaskGet(c *gin.Context) {
@@ -23,7 +22,7 @@ func TaskGet(c *gin.Context) {
 	res.Rescode = 0
 
 	tt := dao.GetTaskById()
-	fmt.Printf("%s", tt)
+	log.Info("%s", tt)
 	res.Message = tt
 	// fmt.Println(res) // 正常输出msg内容
 	c.JSON(http.StatusOK, res)
