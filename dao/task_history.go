@@ -21,10 +21,10 @@ func HistoryInsert() {
 
 	// }
 }
-func HistoryGetById() []vojo.TasksHistory {
-	sqlStr := "SELECT id,task_id, exec_time , exec_result,exec_code,_timestamp FROM task_exec_history"
+func HistoryGetById(req*vojo.GetTaskHistoryByTaskIdReq) []vojo.TasksHistory {
+	sqlStr := "SELECT id,task_id, exec_time , exec_result,exec_code,_timestamp FROM task_exec_history where task_id=? order by id desc limit 100"
 	var taskHistory []vojo.TasksHistory
-	err := CronDb.Select(&taskHistory, sqlStr)
+	err := CronDb.Select(&taskHistory, sqlStr,req.TaskId)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 

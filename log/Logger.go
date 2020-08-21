@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"os"
 	"os/user"
 )
 
@@ -29,6 +30,16 @@ func createLogDir() string{
 	//} else {
 	//	fmt.Print("创建目录成功!")
 	//}
+}
+func BaseGinLog() *os.File {
+	logfileName:=logPath+"gin.access.log"
+	logFile, logErr := os.OpenFile(logfileName, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
+	if logErr != nil {
+		fmt.Println("Fail to find", *logFile, "cServer start Failed")
+		os.Exit(1)
+	}
+	return logFile
+
 }
 
 // Debug

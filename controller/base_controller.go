@@ -2,15 +2,13 @@ package controller
 
 import (
 	"fmt"
-	"go_backend/dao"
-	"go_backend/vojo"
 	"go_backend/log"
+	"go_backend/vojo"
 	"math/rand"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/iris-contrib/go.uuid"
-
 )
 
 type BaseController struct {
@@ -69,8 +67,8 @@ func Search(c *gin.Context) {
 
 	}
 
-	tt := dao.GetTaskByUserId()
-	log.Info("%s", tt)
+	//tt := dao.GetTaskByUserId()
+	log.Info("%s", 1)
 	res.Message = slice
 	// fmt.Println(res) // 正常输出msg内容
 	c.JSON(http.StatusOK, res)
