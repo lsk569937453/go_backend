@@ -8,7 +8,7 @@ import (
 var (
 	logPath string = createLogDir()
 )
-var logger = NewCommonlogger("dda.log")
+var logger = NewCommonlogger("commonGo.log")
 
 
 
