@@ -5,10 +5,10 @@ import (
 	"github.com/robfig/cron/v3"
 	"go_backend/controller"
 	"go_backend/log"
+	_ "go_backend/task"
 )
 
 func main() {
-
 
 	i := 0
 	c := cron.New(cron.WithSeconds())
@@ -26,7 +26,7 @@ func main() {
 
 }
 
-func initController()  {
+func initController() {
 	gin.DefaultWriter = log.BaseGinLog()
 	r := gin.Default()
 	//r.Use(gin.LoggerWithWriter(log.BaseGinLog()))
