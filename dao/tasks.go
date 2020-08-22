@@ -8,21 +8,21 @@ import (
 	"reflect"
 )
 
-func AddTask(req vojo.TaskInsertReq) vojo.BaseRes{
-	 params:=make(map[string]interface{})
+func AddTask(req vojo.TaskInsertReq) vojo.BaseRes {
+	params := make(map[string]interface{})
 
 	elem := reflect.ValueOf(&req).Elem()
 	relType := elem.Type()
 	for i := 0; i < relType.NumField(); i++ {
 		params[relType.Field(i).Name] = elem.Field(i).Interface()
 	}
-	params["user_id"]=-1
+	params["user_id"] = -1
 	_, err := CronDb.NamedExec(`insert into tasks ( task_cron, task_name , user_id,url)values(:CronExpression,:Name,:user_id,:Url)`, params)
 	if err != nil {
 		log.Error("query failed, err:%v\n", err)
 	}
 	var res vojo.BaseRes
-	return  res
+	return res
 
 	// var users []vojo.TasksDao
 	// err = nstmt.Select(&users, map[string]interface{}{"user_id": "-1"})
@@ -31,19 +31,19 @@ func AddTask(req vojo.TaskInsertReq) vojo.BaseRes{
 
 	// }
 }
-func GetTaskByUserId(req*vojo.GetTaskByUserIdReq) []vojo.TasksDao {
-	sqlStr := "SELECT id,task_name, task_cron, url,user_id FROM tasks where user_id=?"
+func GetTaskByUserId(req *vojo.GetTaskByUserIdReq) []vojo.TasksDao {
+	sqlStr := "SELECT id,task_name, task_cron, url,user_id,_timestamp FROM tasks where user_id=?"
 	var users []vojo.TasksDao
-	err := CronDb.Select(&users, sqlStr,req.UserId)
+	err := CronDb.Select(&users, sqlStr, req.UserId)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 	}
 	return users
 }
-func GetTaskById(req*vojo.GetTaskByIdReq) []vojo.TasksDao {
+func GetTaskById(req *vojo.GetTaskByIdReq) []vojo.TasksDao {
 	sqlStr := "SELECT id,task_name, task_cron, url,user_id FROM tasks where id=?"
 	var users []vojo.TasksDao
-	err := CronDb.Select(&users, sqlStr,req.Id)
+	err := CronDb.Select(&users, sqlStr, req.Id)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 	}

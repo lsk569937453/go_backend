@@ -13,26 +13,35 @@ import (
 func init() {
 
 	alltask := dao.GetAllTask()
-	c := cron.New(cron.WithSeconds())
+
 	//spec := "*/5 * * * * ?"
 	//_, err := c.AddFunc(spec, func() {
 	//	i++
 	//	log.Info("cron running:%v", i)
 	//})
+	c := cron.New(cron.WithSeconds())
 	for _, s := range alltask {
+
 		//c := cron.New(cron.WithSeconds())
 		cron := s.Task_cron
 		url := s.Url
 		taskId := s.Id
 		_, err := c.AddFunc(cron, func() {
-			taskHistory := doReq(url, taskId)
-			dao.HistoryInsert(taskHistory)
+			dotask(url, taskId)
 		})
 		if err != nil {
 			log.Error("%v", err.Error())
 		}
+
 	}
 	c.Start()
+
+}
+func dotask(url string, taskId int) {
+	go func() {
+		taskHistory := doReq(url, taskId)
+		dao.HistoryInsert(taskHistory)
+	}()
 
 }
 func doReq(url string, taskId int) vojo.TasksHistory {
