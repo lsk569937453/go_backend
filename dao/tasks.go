@@ -58,6 +58,16 @@ func GetAllTask() []vojo.TasksDao {
 	}
 	return users
 }
+func UpdateTask(req vojo.TaskUpdateReq) int {
+	sqlStr := "update tasks set  task_cron=? , url=? where id=?"
+	_, err := CronDb.Exec(sqlStr, req.CronExpression, req.Url, req.Id)
+	if err != nil {
+		log.Error("update task error:%v", err.Error())
+		return -1
+	}
+
+	return 0
+}
 
 //func GetTaskByUserId() []vojo.TasksDao {
 //

@@ -16,17 +16,17 @@ func TaskGet(c *gin.Context) {
 
 	tt := dao.GetAllTask()
 	data, _ := json.Marshal(tt)
-	log.Info("%s",string(data))
+	log.Info("%s", string(data))
 	res.Message = tt
 	// fmt.Println(res) // 正常输出msg内容
 	c.JSON(http.StatusOK, res)
 
 }
 func TaskGetByUserId(c *gin.Context) {
-	var req  vojo.GetTaskByUserIdReq
+	var req vojo.GetTaskByUserIdReq
 	// message := c.BindJSON("message")
 	// nick := c.PostForm("nick")
-	error:=c.BindJSON(&req)
+	error := c.BindJSON(&req)
 	if error == nil {
 		//log.Info(form.Name, form.CronExpression)
 
@@ -35,22 +35,21 @@ func TaskGetByUserId(c *gin.Context) {
 		var res vojo.BaseRes
 		res.Rescode = 0
 		data, _ := json.Marshal(tt)
-		log.Info("%s",string(data))
+		log.Info("%s", string(data))
 		res.Message = tt
 		// fmt.Println(res) // 正常输出msg内容
 		c.JSON(http.StatusOK, res)
 
-
-	}else {
-		log.Error("bind error:%v",error.Error())
+	} else {
+		log.Error("bind error:%v", error.Error())
 	}
 
 }
 func TaskGetById(c *gin.Context) {
-	var req  vojo.GetTaskByIdReq
+	var req vojo.GetTaskByIdReq
 	// message := c.BindJSON("message")
 	// nick := c.PostForm("nick")
-	error:=c.BindJSON(&req)
+	error := c.BindJSON(&req)
 	if error == nil {
 		//log.Info(form.Name, form.CronExpression)
 
@@ -59,36 +58,62 @@ func TaskGetById(c *gin.Context) {
 		var res vojo.BaseRes
 		res.Rescode = 0
 		data, _ := json.Marshal(tt)
-		log.Info("%s",string(data))
+		log.Info("%s", string(data))
 		res.Message = tt
 		// fmt.Println(res) // 正常输出msg内容
 		c.JSON(http.StatusOK, res)
 
-
-	}else {
-		log.Error("bind error:%v",error.Error())
+	} else {
+		log.Error("bind error:%v", error.Error())
 	}
 
 }
 func TaskAdd(c *gin.Context) {
-	var form  vojo.TaskInsertReq
+	var form vojo.TaskInsertReq
 	// message := c.BindJSON("message")
 	// nick := c.PostForm("nick")
-	error:=c.BindJSON(&form)
+	error := c.BindJSON(&form)
 	if error == nil {
 		//log.Info(form.Name, form.CronExpression)
 
 		tt := dao.AddTask(form)
 
-		tt.Message="添加任务成功"
+		tt.Message = "添加任务成功"
 
 		//var res vojo.CheckTaskRes
 		//res.ResponseCode = 0
 		//res.Message = "添加任务成功"
 		c.JSON(http.StatusOK, tt)
 
-	}else {
-		log.Error("bind error:%v",error.Error())
+	} else {
+		log.Error("bind error:%v", error.Error())
 	}
 
+}
+func TaskUpdate(c *gin.Context) {
+	var form vojo.TaskUpdateReq
+	// message := c.BindJSON("message")
+	// nick := c.PostForm("nick")
+	error := c.BindJSON(&form)
+	if error == nil {
+		//log.Info(form.Name, form.CronExpression)
+
+		tt := dao.UpdateTask(form)
+
+		var res vojo.BaseRes
+		res.Rescode = tt
+
+		if tt == 0 {
+			res.Message = "更新成功"
+		} else {
+			res.Message = "更新失败"
+		}
+		//var res vojo.CheckTaskRes
+		//res.ResponseCode = 0
+		//res.Message = "添加任务成功"
+		c.JSON(http.StatusOK, res)
+
+	} else {
+		log.Error("bind error:%v", error.Error())
+	}
 }

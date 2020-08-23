@@ -5,14 +5,20 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-
 )
 
 var (
+	//userName  string = "root"
+	//password  string = "elong"
+	//ipAddrees string = "10.160.85.246"
+	//port      int    = 3308
+	//dbName    string = "cron_timer"
+	//charset   string = "utf8"
+
 	userName  string = "root"
-	password  string = "elong"
-	ipAddrees string = "10.160.85.246"
-	port      int    = 3308
+	password  string = "123456"
+	ipAddrees string = "127.0.0.1"
+	port      int    = 3306
 	dbName    string = "cron_timer"
 	charset   string = "utf8"
 )

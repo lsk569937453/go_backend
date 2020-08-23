@@ -2,3 +2,4 @@ _debug_bin
 vendor/
 .idea/
 .vscode
+resource/

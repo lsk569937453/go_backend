@@ -29,6 +29,11 @@ func main() {
 func initController() {
 	gin.DefaultWriter = log.BaseGinLog()
 	r := gin.Default()
+	r.LoadHTMLGlob("./resource/dist/*.html")              // 添加入口index.html
+	r.LoadHTMLFiles("./resource/dist/static/*/*")         // 添加资源路径
+	r.Static("/static", "./resource/dist/static")         // 添加资源路径
+	r.StaticFile("/admin/", "./resource/dist/index.html") //前端接口
+
 	//r.Use(gin.LoggerWithWriter(log.BaseGinLog()))
 	r.POST("/api/check/task", controller.InitRouter)
 	r.GET("/api/search", controller.Search)
@@ -36,6 +41,7 @@ func initController() {
 	r.GET("/api/task/getAll", controller.TaskGet)
 	r.POST("/api/task/getByUserId", controller.TaskGetByUserId)
 	r.POST("/api/task/getById", controller.TaskGetById)
+	r.POST("/api/task/updateById", controller.TaskUpdate)
 	r.POST("/api/taskHistory/getByTaskId", controller.TaskHistoryGetByTaskId)
 	r.Run(":9394") // listen and serve
 }
