@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"go_backend/dao"
 	"go_backend/log"
+	"go_backend/task"
 	"go_backend/vojo"
 	"net/http"
 
@@ -78,12 +79,16 @@ func TaskAdd(c *gin.Context) {
 
 		tt := dao.AddTask(form)
 
-		tt.Message = "添加任务成功"
+		task.AddTask(form.CronExpression, form.Url, int(tt))
+
+		var res vojo.BaseRes
+
+		res.Message = "添加任务成功"
 
 		//var res vojo.CheckTaskRes
 		//res.ResponseCode = 0
 		//res.Message = "添加任务成功"
-		c.JSON(http.StatusOK, tt)
+		c.JSON(http.StatusOK, res)
 
 	} else {
 		log.Error("bind error:%v", error.Error())

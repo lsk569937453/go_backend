@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/robfig/cron/v3"
 	"go_backend/controller"
 	"go_backend/log"
 	_ "go_backend/task"
@@ -10,18 +9,6 @@ import (
 
 func main() {
 
-	i := 0
-	c := cron.New(cron.WithSeconds())
-	spec := "*/5 * * * * ?"
-	_, err := c.AddFunc(spec, func() {
-		i++
-		log.Info("cron running:%v", i)
-	})
-	if err != nil {
-
-		log.Error("Site is down: %v\n", err)
-	}
-	c.Start()
 	initController()
 
 }

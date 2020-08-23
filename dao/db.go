@@ -44,11 +44,11 @@ func initConfig() {
 	password = config.GetValue("mysql", "password")
 	ipAddrees = config.GetValue("mysql", "ipAddrees")
 	portString := config.GetValue("mysql", "port")
-	port, err := strconv.Atoi(portString)
+	portNew, err := strconv.Atoi(portString)
 	if err != nil {
 		log.Error("atoi error:", err.Error())
 		port = -1
 	} else {
-		log.Info("port is %v", port)
+		port = portNew
 	}
 }

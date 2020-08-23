@@ -5,10 +5,13 @@ import (
 	"github.com/valyala/fasthttp"
 	"go_backend/dao"
 	"go_backend/log"
+	"go_backend/redis"
 	"go_backend/vojo"
 	"strconv"
 	"time"
 )
+
+var cronJob *cron.Cron
 
 func init() {
 
@@ -20,22 +23,48 @@ func init() {
 	//	log.Info("cron running:%v", i)
 	//})
 	c := cron.New(cron.WithSeconds())
+	c.Start()
+	cronJob = c
 	for _, s := range alltask {
 
 		//c := cron.New(cron.WithSeconds())
 		cron := s.Task_cron
 		url := s.Url
 		taskId := s.Id
-		_, err := c.AddFunc(cron, func() {
-			dotask(url, taskId)
-		})
-		if err != nil {
-			log.Error("%v", err.Error())
-		}
+		AddTask(cron, url, taskId)
+		//id, err := c.AddFunc(cron, func() {
+		//	dotask(url, taskId)
+		//})
+		//
+		//if err != nil {
+		//	log.Error("%v", err.Error())
+		//} else {
+		//	saveToRedis(taskId, id)
+		//
+		//}
+	}
+
+}
+func AddTask(cron string, url string, taskId int) {
+	id, err := cronJob.AddFunc(cron, func() {
+		dotask(url, taskId)
+	})
+
+	if err != nil {
+		log.Error("%v", err.Error())
+	} else {
+		saveToRedis(taskId, id)
 
 	}
-	c.Start()
+}
 
+/**
+save the mysqlID and taskID to redis
+*/
+func saveToRedis(taskMysqlId int, taskLocalId cron.EntryID) {
+	string1 := strconv.Itoa(taskMysqlId)
+	string2 := strconv.Itoa(int(taskLocalId))
+	redis.Set(string1, string2)
 }
 func dotask(url string, taskId int) {
 	go func() {
@@ -51,6 +80,7 @@ func doReq(url string, taskId int) vojo.TasksHistory {
 	var responseBody string
 	if err != nil {
 		responseBody = err.Error()
+		status = -1
 		log.Error("doReq error:%v", err.Error())
 	} else {
 		responseBody = string(resp)

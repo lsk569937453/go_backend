@@ -8,7 +8,7 @@ import (
 	"reflect"
 )
 
-func AddTask(req vojo.TaskInsertReq) vojo.BaseRes {
+func AddTask(req vojo.TaskInsertReq) int64 {
 	params := make(map[string]interface{})
 
 	elem := reflect.ValueOf(&req).Elem()
@@ -17,12 +17,21 @@ func AddTask(req vojo.TaskInsertReq) vojo.BaseRes {
 		params[relType.Field(i).Name] = elem.Field(i).Interface()
 	}
 	params["user_id"] = -1
-	_, err := CronDb.NamedExec(`insert into tasks ( task_cron, task_name , user_id,url)values(:CronExpression,:Name,:user_id,:Url)`, params)
+	result, err := CronDb.NamedExec(`insert into tasks ( task_cron, task_name , user_id,url)values(:CronExpression,:Name,:user_id,:Url)`, params)
 	if err != nil {
-		log.Error("query failed, err:%v\n", err)
+		log.Error("query failed, err:%v\n", err.Error())
+		return -1
+
+	} else {
+		insertId, err := result.LastInsertId()
+		if err != nil {
+			log.Error("LastInsertId failed, err:%v\n", err.Error())
+			return -1
+		} else {
+			return insertId
+			//task.AddTask(req.CronExpression, req.Url, int(insertId))
+		}
 	}
-	var res vojo.BaseRes
-	return res
 
 	// var users []vojo.TasksDao
 	// err = nstmt.Select(&users, map[string]interface{}{"user_id": "-1"})
