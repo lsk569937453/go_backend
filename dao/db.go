@@ -2,6 +2,9 @@ package dao
 
 import (
 	"fmt"
+	"go_backend/config"
+	"go_backend/log"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -15,17 +18,17 @@ var (
 	//dbName    string = "cron_timer"
 	//charset   string = "utf8"
 
-	userName  string = "root"
-	password  string = "123456"
-	ipAddrees string = "127.0.0.1"
-	port      int    = 3306
+	userName  string = ""
+	password  string = ""
+	ipAddrees string = ""
+	port      int    = -1
 	dbName    string = "cron_timer"
 	charset   string = "utf8"
 )
 var CronDb *sqlx.DB
 
 func init() {
-
+	initConfig()
 	CronDb = InitDb()
 }
 func InitDb() *sqlx.DB {
@@ -35,4 +38,17 @@ func InitDb() *sqlx.DB {
 		fmt.Printf("mysql connect failed, detail is [%v]", err.Error())
 	}
 	return Db
+}
+func initConfig() {
+	userName = config.GetValue("mysql", "username")
+	password = config.GetValue("mysql", "password")
+	ipAddrees = config.GetValue("mysql", "ipAddrees")
+	portString := config.GetValue("mysql", "port")
+	port, err := strconv.Atoi(portString)
+	if err != nil {
+		log.Error("atoi error:", err.Error())
+		port = -1
+	} else {
+		log.Info("port is %v", port)
+	}
 }
