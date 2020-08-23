@@ -11,18 +11,17 @@ var (
 )
 var logger = NewCommonlogger("commonGo.log")
 
-
-
 func init() {
 	createLogDir()
 }
-func createLogDir() string{
+func createLogDir() string {
 	user, err := user.Current()
 	if nil != err {
-		fmt.Printf("",err)
+		fmt.Printf("", err)
 		return "/home/work/ddalog/"
 	}
-	return user.HomeDir+"/"
+	fmt.Println("log dir:" + user.HomeDir)
+	return user.HomeDir + "/"
 
 	//err := os.MkdirAll(logPath, 0777)
 	//if err != nil {
@@ -32,7 +31,7 @@ func createLogDir() string{
 	//}
 }
 func BaseGinLog() *os.File {
-	logfileName:=logPath+"gin.access.log"
+	logfileName := logPath + "gin.access.log"
 	logFile, logErr := os.OpenFile(logfileName, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
 	if logErr != nil {
 		fmt.Println("Fail to find", *logFile, "cServer start Failed")

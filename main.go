@@ -43,5 +43,5 @@ func initController() {
 	r.POST("/api/task/getById", controller.TaskGetById)
 	r.POST("/api/task/updateById", controller.TaskUpdate)
 	r.POST("/api/taskHistory/getByTaskId", controller.TaskHistoryGetByTaskId)
-	r.Run(":9394") // listen and serve
+	r.Run(":9393") // listen and serve
 }
