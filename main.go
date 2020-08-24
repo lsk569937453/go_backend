@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go_backend/controller"
 	"go_backend/log"
@@ -16,7 +17,33 @@ func main() {
 
 func initController() {
 	gin.DefaultWriter = log.BaseGinLog()
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+
+		return fmt.Sprintf("[GIN] %v |%3d| %13v | %15s | %-7s  %#v %s |\"%s\" \n",
+			param.TimeStamp.Format("2006/01/02 - 15:04:05"),
+			param.StatusCode,
+			param.Latency,
+			param.ClientIP,
+			 param.Method,
+			param.Path,
+			param.ErrorMessage,
+			param.Request.UserAgent(),
+
+		)
+		//// your custom format
+		//return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
+		//	param.ClientIP,
+		//	param.TimeStamp.Format(time.RFC3339),
+		//	param.Method,
+		//	param.Path,
+		//	param.Request.Proto,
+		//	param.StatusCode,
+		//	param.Latency,
+		//	param.Request.UserAgent(),
+		//	param.ErrorMessage,
+		//)
+	}))
 	r.LoadHTMLGlob("./resource/dist/*.html")              // 添加入口index.html
 	r.LoadHTMLFiles("./resource/dist/static/*/*")         // 添加资源路径
 	r.Static("/static", "./resource/dist/static")         // 添加资源路径
