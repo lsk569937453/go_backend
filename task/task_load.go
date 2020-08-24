@@ -57,6 +57,20 @@ func AddTask(cron string, url string, taskId int) {
 
 	}
 }
+func DeleteTask(taskId int) {
+	stringID:=strconv.Itoa(taskId)
+	localTaskId:=redis.Get(stringID)
+	if localTaskId==""{
+		log.Info("can not find taskID in redis")
+		return
+	}
+	localTaskIdInt,err:=strconv.Atoi(localTaskId)
+	if err!=nil{
+		log.Error("DeleteTask error",err.Error())
+	}else {
+		cronJob.Remove(cron.EntryID(localTaskIdInt))
+	}
+}
 
 /**
 save the mysqlID and taskID to redis

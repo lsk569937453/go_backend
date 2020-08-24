@@ -35,5 +35,8 @@ func HistoryGetById(req *vojo.GetTaskHistoryByTaskIdReq) []vojo.TasksHistory {
 		fmt.Printf("query failed, err:%v\n", err)
 
 	}
+	if taskHistory==nil{
+		taskHistory=make([]vojo.TasksHistory,0)
+	}
 	return taskHistory
 }

@@ -122,3 +122,31 @@ func TaskUpdate(c *gin.Context) {
 		log.Error("bind error:%v", error.Error())
 	}
 }
+func TaskDelete(c *gin.Context) {
+	var req vojo.TaskDelByIdReq
+	// message := c.BindJSON("message")
+	// nick := c.PostForm("nick")
+	error := c.BindJSON(&req)
+	if error == nil {
+		//log.Info(form.Name, form.CronExpression)
+
+		tt := dao.DelTask(req)
+
+		var res vojo.BaseRes
+		res.Rescode = tt
+
+		if tt == 0 {
+			task.DeleteTask(req.Id)
+			res.Message = "删除成功"
+		} else {
+			res.Message = "删除失败"
+		}
+		//var res vojo.CheckTaskRes
+		//res.ResponseCode = 0
+		//res.Message = "添加任务成功"
+		c.JSON(http.StatusOK, res)
+
+	} else {
+		log.Error("bind error:%v", error.Error())
+	}
+}

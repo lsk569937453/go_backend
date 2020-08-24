@@ -77,6 +77,16 @@ func UpdateTask(req vojo.TaskUpdateReq) int {
 
 	return 0
 }
+func DelTask(req vojo.TaskDelByIdReq) int {
+	sqlStr := "delete from tasks  where id=?"
+	_, err := CronDb.Exec(sqlStr, req.Id)
+	if err != nil {
+		log.Error("del task error:%v", err.Error())
+		return -1
+	}
+
+	return 0
+}
 
 //func GetTaskByUserId() []vojo.TasksDao {
 //
