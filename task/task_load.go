@@ -13,15 +13,14 @@ import (
 
 var cronJob *cron.Cron
 
+/**
+ * 
+ * @Description  get all the task and exec the task cron
+ * @Date 2:36 下午 2020/8/24
+ **/
 func init() {
 
-	alltask := dao.GetAllTask()
-
-	//spec := "*/5 * * * * ?"
-	//_, err := c.AddFunc(spec, func() {
-	//	i++
-	//	log.Info("cron running:%v", i)
-	//})
+	alltask := dao.GetAllTask() //get All the task
 	c := cron.New(cron.WithSeconds())
 	c.Start()
 	cronJob = c
@@ -32,16 +31,7 @@ func init() {
 		url := s.Url
 		taskId := s.Id
 		AddTask(cron, url, taskId)
-		//id, err := c.AddFunc(cron, func() {
-		//	dotask(url, taskId)
-		//})
-		//
-		//if err != nil {
-		//	log.Error("%v", err.Error())
-		//} else {
-		//	saveToRedis(taskId, id)
-		//
-		//}
+
 	}
 
 }

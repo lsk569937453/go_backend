@@ -12,11 +12,8 @@ import (
 
 func TaskHistoryGetByTaskId(c *gin.Context) {
 	var req vojo.GetTaskHistoryByTaskIdReq
-	// message := c.BindJSON("message")
-	// nick := c.PostForm("nick")
 	error := c.BindJSON(&req)
 	if error == nil {
-		//log.Info(form.Name, form.CronExpression)
 
 		tt := dao.HistoryGetById(&req)
 

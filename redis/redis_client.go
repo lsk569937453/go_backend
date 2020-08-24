@@ -11,6 +11,11 @@ var ctx = context.Background()
 
 var redisClient *redis.Client
 
+/**
+ *
+ * @Description  init the redis client
+ * @Date 2:36 下午 2020/8/24
+ **/
 func init() {
 	addr := config.GetValue("redis", "address")
 	rdb := redis.NewClient(&redis.Options{

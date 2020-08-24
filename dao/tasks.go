@@ -8,6 +8,11 @@ import (
 	"reflect"
 )
 
+/**
+ * 
+ * @Description
+ * @Date 2:35 下午 2020/8/24
+ **/
 func AddTask(req vojo.TaskInsertReq) int64 {
 	params := make(map[string]interface{})
 
@@ -40,6 +45,13 @@ func AddTask(req vojo.TaskInsertReq) int64 {
 
 	// }
 }
+/**
+ * 
+ * @Description //TODO 
+ * @Date 2:29 下午 2020/8/24
+ * @Param 
+ * @return 
+ **/
 func GetTaskByUserId(req *vojo.GetTaskByUserIdReq) []vojo.TasksDao {
 	sqlStr := "SELECT id,task_name, task_cron, url,user_id,_timestamp FROM tasks where user_id=?"
 	var users []vojo.TasksDao

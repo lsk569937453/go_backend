@@ -20,12 +20,7 @@ func HistoryInsert(history vojo.TasksHistory) {
 		fmt.Printf("query failed, err:%v\n", err)
 	}
 
-	// var users []vojo.TasksDao
-	// err = nstmt.Select(&users, map[string]interface{}{"user_id": "-1"})
-	// if err != nil {
-	// 	fmt.Printf("query failed, err:%v\n", err)
 
-	// }
 }
 func HistoryGetById(req *vojo.GetTaskHistoryByTaskIdReq) []vojo.TasksHistory {
 	sqlStr := "SELECT id,task_id, exec_time , exec_result,exec_code,_timestamp FROM task_exec_history where task_id=? order by id desc limit 100"

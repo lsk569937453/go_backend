@@ -11,12 +11,7 @@ import (
 )
 
 var (
-	//userName  string = "root"
-	//password  string = "elong"
-	//ipAddrees string = "10.160.85.246"
-	//port      int    = 3308
-	//dbName    string = "cron_timer"
-	//charset   string = "utf8"
+
 
 	userName  string = ""
 	password  string = ""
