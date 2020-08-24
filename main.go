@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go_backend/controller"
 	"go_backend/log"
+	"go_backend/midware"
 	_ "go_backend/task"
 )
 
@@ -20,6 +21,8 @@ func initController() {
 	r.LoadHTMLFiles("./resource/dist/static/*/*")         // 添加资源路径
 	r.Static("/static", "./resource/dist/static")         // 添加资源路径
 	r.StaticFile("/admin/", "./resource/dist/index.html") //前端接口
+
+	r.Use(midware.IpAuthorize())
 
 	//r.Use(gin.LoggerWithWriter(log.BaseGinLog()))
 	r.POST("/api/check/task", controller.InitRouter)

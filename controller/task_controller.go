@@ -101,6 +101,11 @@ func TaskAdd(c *gin.Context) {
 	}
 
 }
+/**
+ *
+ * @Description  update the task
+ * @Date 2:53 下午 2020/8/24
+ **/
 func TaskUpdate(c *gin.Context) {
 	var form vojo.TaskUpdateReq
 	// message := c.BindJSON("message")
@@ -115,13 +120,14 @@ func TaskUpdate(c *gin.Context) {
 		res.Rescode = tt
 
 		if tt == 0 {
-			res.Message = "更新成功"
+			res.Message = "update success"
+			//if update the task success,then remove the cron job
+			//in the memory,and add  the new cronjob
+			task.DeleteTask(form.Id)
+			task.AddTask(form.CronExpression,form.Url,form.Id)
 		} else {
-			res.Message = "更新失败"
+			res.Message = "update fail"
 		}
-		//var res vojo.CheckTaskRes
-		//res.ResponseCode = 0
-		//res.Message = "添加任务成功"
 		c.JSON(http.StatusOK, res)
 
 	} else {

@@ -62,7 +62,7 @@ func GetTaskByUserId(req *vojo.GetTaskByUserIdReq) []vojo.TasksDao {
 	return users
 }
 func GetTaskById(req *vojo.GetTaskByIdReq) []vojo.TasksDao {
-	sqlStr := "SELECT id,task_name, task_cron, url,user_id FROM tasks where id=?"
+	sqlStr := "SELECT id,task_name, task_cron, url,user_id ,_timestamp FROM tasks where id=?"
 	var users []vojo.TasksDao
 	err := CronDb.Select(&users, sqlStr, req.Id)
 	if err != nil {

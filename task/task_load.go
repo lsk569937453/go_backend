@@ -47,6 +47,11 @@ func AddTask(cron string, url string, taskId int) {
 
 	}
 }
+/**
+ *
+ * @Description  delete the cron task by taskId
+ * @Date 2:54 下午 2020/8/24
+ **/
 func DeleteTask(taskId int) {
 	stringID:=strconv.Itoa(taskId)
 	localTaskId:=redis.Get(stringID)
