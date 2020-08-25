@@ -2,6 +2,7 @@ package task
 
 import (
 	"encoding/base64"
+	"fmt"
 	"github.com/robfig/cron/v3"
 	"github.com/valyala/fasthttp"
 	"go_backend/dao"
@@ -42,7 +43,8 @@ func AddTask(cron string, url string, taskId int) {
 	})
 
 	if err != nil {
-		log.Error("%v", err.Error())
+		errlog:=fmt.Sprintf("AddTask error:%s,taskID:%d,cron:%s,url:%s",err.Error(),taskId,cron,url)
+		log.Error("",errlog)
 	} else {
 		saveToRedis(taskId, id)
 
@@ -91,7 +93,8 @@ func doReq(url string, taskId int) vojo.TasksHistory {
 	if err != nil {
 		responseBody = err.Error()
 		status = -1
-		log.Error("doReq error:%v", err.Error())
+		errlog:=fmt.Sprintf("error message:%s,taskId:%d",err.Error(),taskId)
+		log.Error("doReq error,", errlog)
 	} else {
 		responseBody = string(resp)
 	}

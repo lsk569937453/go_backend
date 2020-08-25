@@ -65,6 +65,7 @@ func Errorf(mes string, args ...interface{}) {
 
 // Error
 func Error(mes string, args ...interface{}) {
+
 	logger.Sugar().Errorf(mes, args)
 
 }

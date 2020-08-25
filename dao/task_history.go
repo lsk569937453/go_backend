@@ -38,7 +38,7 @@ func HistoryGetById(req *vojo.GetTaskHistoryByTaskIdReq) []vojo.TasksHistory {
 		for i,item:=range  taskHistory{
 			decodeBytes, err := base64.StdEncoding.DecodeString(item.Exec_result)
 			if err!=nil{
-				log.Error("base64 decode %s",err.Error())
+				log.Errorf("base64 decode %s,historyId:%s",err.Error(),item.Id)
 			}else {
 				taskHistory[i].Exec_result=string(decodeBytes)
 			}
