@@ -2,7 +2,6 @@ package dao
 
 import (
 	"encoding/base64"
-	"fmt"
 	"go_backend/log"
 	"go_backend/vojo"
 	"reflect"
@@ -19,7 +18,7 @@ func HistoryInsert(history vojo.TasksHistory) {
 
 	_, err := CronDb.NamedExec(`insert into task_exec_history ( task_id, exec_time , exec_result,exec_code)values(:Task_id,:Exec_time,:Exec_result,:Exec_code)`, params)
 	if err != nil {
-		log.Error("HistoryInsert failed, err:%v\n", err.Error())
+		log.Error("HistoryInsert failed, err:%v", err.Error())
 	}
 
 
@@ -29,7 +28,7 @@ func HistoryGetById(req *vojo.GetTaskHistoryByTaskIdReq) []vojo.TasksHistory {
 	var taskHistory []vojo.TasksHistory
 	err := CronDb.Select(&taskHistory, sqlStr, req.TaskId)
 	if err != nil {
-		fmt.Printf("query failed, err:%v\n", err)
+		log.Errorf("query failed, err:%v", err.Error())
 
 	}
 	if taskHistory==nil{

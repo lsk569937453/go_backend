@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"fmt"
 	"go_backend/log"
 	"go_backend/vojo"
 
@@ -24,13 +23,13 @@ func AddTask(req vojo.TaskInsertReq) int64 {
 	params["user_id"] = -1
 	result, err := CronDb.NamedExec(`insert into tasks ( task_cron, task_name , user_id,url)values(:CronExpression,:Name,:user_id,:Url)`, params)
 	if err != nil {
-		log.Error("query failed, err:%v\n", err.Error())
+		log.Error("query failed, err:%v", err.Error())
 		return -1
 
 	} else {
 		insertId, err := result.LastInsertId()
 		if err != nil {
-			log.Error("LastInsertId failed, err:%v\n", err.Error())
+			log.Error("LastInsertId failed, err:%v", err.Error())
 			return -1
 		} else {
 			return insertId
@@ -57,7 +56,7 @@ func GetTaskByUserId(req *vojo.GetTaskByUserIdReq) []vojo.TasksDao {
 	var users []vojo.TasksDao
 	err := CronDb.Select(&users, sqlStr, req.UserId)
 	if err != nil {
-		fmt.Printf("query failed, err:%v\n", err)
+		log.Errorf("query failed, err:%v", err.Error())
 	}
 	return users
 }
@@ -66,7 +65,7 @@ func GetTaskById(req *vojo.GetTaskByIdReq) []vojo.TasksDao {
 	var users []vojo.TasksDao
 	err := CronDb.Select(&users, sqlStr, req.Id)
 	if err != nil {
-		fmt.Printf("query failed, err:%v\n", err)
+		log.Errorf("query failed, err:%v", err.Error())
 	}
 	return users
 }
@@ -75,7 +74,7 @@ func GetAllTask() []vojo.TasksDao {
 	var users []vojo.TasksDao
 	err := CronDb.Select(&users, sqlStr)
 	if err != nil {
-		fmt.Printf("query failed, err:%v\n", err)
+		log.Errorf("query failed, err:%v", err.Error())
 	}
 	return users
 }
@@ -83,7 +82,7 @@ func UpdateTask(req vojo.TaskUpdateReq) int {
 	sqlStr := "update tasks set  task_cron=? , url=? where id=?"
 	_, err := CronDb.Exec(sqlStr, req.CronExpression, req.Url, req.Id)
 	if err != nil {
-		log.Error("update task error:%v", err.Error())
+		log.Errorf("update task error:%v", err.Error())
 		return -1
 	}
 
