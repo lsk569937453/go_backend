@@ -1,6 +1,7 @@
 package task
 
 import (
+	"encoding/base64"
 	"github.com/robfig/cron/v3"
 	"github.com/valyala/fasthttp"
 	"go_backend/dao"
@@ -94,9 +95,11 @@ func doReq(url string, taskId int) vojo.TasksHistory {
 	} else {
 		responseBody = string(resp)
 	}
+	base64Res:=base64.StdEncoding.EncodeToString([]byte(responseBody))
+
 	var historyDao vojo.TasksHistory
 	historyDao.Exec_code = status
-	historyDao.Exec_result = responseBody
+	historyDao.Exec_result = base64Res
 	historyDao.Exec_time = strconv.FormatInt(execTime.Milliseconds(), 10)
 	historyDao.Task_id = taskId
 	return historyDao
