@@ -100,7 +100,7 @@ func doReq(url string, taskId int) vojo.TasksHistory {
 		status = -1
 
 		errorlog:=fmt.Sprintf("error message:%s,taskId:%d",err.Error(),taskId)
-		log.Error("doReq error,", errorlog)
+		log.Error("doReq error,%s", errorlog)
 	} else {
 		responseBody = string(resp)
 	}

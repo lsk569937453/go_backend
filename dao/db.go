@@ -41,7 +41,7 @@ func initConfig() {
 	portString := config.GetValue("mysql", "port")
 	portNew, err := strconv.Atoi(portString)
 	if err != nil {
-		log.Error("atoi error:", err.Error())
+		log.Error("atoi error:%s", err.Error())
 		port = -1
 	} else {
 		port = portNew
