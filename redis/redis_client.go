@@ -33,7 +33,7 @@ func Set(key string, value string) error {
 func Get(key string) string {
 	result, err := redisClient.Get(ctx, key).Result()
 	if err != nil {
-		log.Error("Get error:", err.Error())
+		log.Errorf("Get error:%s", err.Error())
 		return ""
 	} else {
 		return result
