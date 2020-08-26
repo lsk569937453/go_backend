@@ -6,6 +6,7 @@ The front_end project is [FrontEndProject](https://github.com/lsk569937453/rust_
 
 The test   of the whole project  is  [testProject](http://lskyy.top/admin).
 
+The postman document is [Document](https://documenter.getpostman.com/view/735513/TVCZZAcb)
 ## Get started
 
 ### 2.1 server
