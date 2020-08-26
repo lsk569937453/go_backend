@@ -19,7 +19,9 @@ var (
 	host = `smtp.qq.com`       // 发送邮箱：服务器地址
 	port = 25                  // 发送邮箱：端口（默认端口：465，QQ邮箱端口：25）
 )
+/**
 
+ */
 func main() {
 	m := gomail.NewMessage()
 	m.SetHeader(`From`, user)

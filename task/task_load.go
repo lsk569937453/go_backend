@@ -85,6 +85,11 @@ func dotask(url string, taskId int) {
 	}()
 
 }
+/**
+ *
+ * @Description  request the url with http get method
+ * @Date 11:34 上午 2020/8/25
+ **/
 func doReq(url string, taskId int) vojo.TasksHistory {
 	preTime := time.Now()
 	status, resp, err := fasthttp.Get(nil, url)
@@ -94,8 +99,8 @@ func doReq(url string, taskId int) vojo.TasksHistory {
 		responseBody = err.Error()
 		status = -1
 
-		errlog:=fmt.Sprintf("error message:%s,taskId:%d",err.Error(),taskId)
-		log.Error("doReq error,", errlog)
+		errorlog:=fmt.Sprintf("error message:%s,taskId:%d",err.Error(),taskId)
+		log.Error("doReq error,", errorlog)
 	} else {
 		responseBody = string(resp)
 	}
