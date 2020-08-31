@@ -37,6 +37,12 @@ func init() {
 	}
 
 }
+/**
+ * 
+ * @Description  add the task into the memory
+
+ * @Date 2:40 下午 2020/8/31
+ **/
 func AddTask(cron string, url string, taskId int) {
 	id, err := cronJob.AddFunc(cron, func() {
 		dotask(url, taskId)
@@ -78,7 +84,14 @@ func saveToRedis(taskMysqlId int, taskLocalId cron.EntryID) {
 	string2 := strconv.Itoa(int(taskLocalId))
 	redis.Set(string1, string2)
 }
+/**
+ *
+ * @Description  exec the task at the scheduled time
+ * @Date 2:41 下午 2020/8/31
+ **/
 func dotask(url string, taskId int) {
+
+	//new a gorotine to exec the data
 	go func() {
 		taskHistory := doReq(url, taskId)
 		dao.HistoryInsert(taskHistory)

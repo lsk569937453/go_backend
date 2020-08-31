@@ -46,3 +46,32 @@ func HistoryGetById(req *vojo.GetTaskHistoryByTaskIdReq) []vojo.TasksHistory {
 	}
 	return taskHistory
 }
+/**
+ *
+ * @Description  get the row count
+ * @Date 2:31 下午 2020/8/31
+ **/
+func HitoryCount()int64  {
+	sqlStr:="select count(*) from task_exec_history"
+	var count int64
+	 err := CronDb.QueryRow(sqlStr).Scan(&count)
+	if err!=nil{
+		log.Error("del task error:%v", err.Error())
+		return -1
+	}
+	return count
+
+
+}
+/**
+ * 
+ * @Description  delete the last n row data
+ * @Date 2:22 下午 2020/8/31
+ **/
+func HitoryDeleteLast(rowcount int){
+	sqlStr:="DELETE FROM task_exec_history ORDER BY  id asc limit ?"
+	_, err := CronDb.Exec(sqlStr, rowcount)
+	if err != nil {
+		log.Error("del task error:%v", err.Error())
+	}
+}
