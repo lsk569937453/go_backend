@@ -24,11 +24,10 @@ func initController() {
 			param.StatusCode,
 			param.Latency,
 			param.ClientIP,
-			 param.Method,
+			param.Method,
 			param.Path,
 			param.ErrorMessage,
 			param.Request.UserAgent(),
-
 		)
 		//// your custom format
 		//return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
@@ -60,5 +59,6 @@ func initController() {
 	r.POST("/api/task/updateById", controller.TaskUpdate)
 	r.POST("/api/task/delById", controller.TaskDelete)
 	r.POST("/api/taskHistory/getByTaskId", controller.TaskHistoryGetByTaskId)
+	r.POST("/api/taskHistory/getByPage", controller.TaskHistoryGetByPage)
 	r.Run(":9393") // listen and serve
 }
