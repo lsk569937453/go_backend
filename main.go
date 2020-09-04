@@ -42,10 +42,12 @@ func initController() {
 		//	param.ErrorMessage,
 		//)
 	}))
-	r.LoadHTMLGlob("./resource/dist/*.html")              // 添加入口index.html
-	r.LoadHTMLFiles("./resource/dist/static/*/*")         // 添加资源路径
-	r.Static("/static", "./resource/dist/static")         // 添加资源路径
-	r.StaticFile("/admin/", "./resource/dist/index.html") //前端接口
+	r.LoadHTMLGlob("./resource/dist/*/*.html")               // 添加入口index.html
+	r.LoadHTMLFiles("./resource/dist/static/*/*")            // 添加资源路径
+	r.Static("/static", "./resource/dist/")                  // 添加资源路径
+	r.StaticFile("/admin/", "./resource/dist/pc/index.html") //前端接口
+
+	r.StaticFile("/m/", "./resource/dist/mobile/index.html") //前端接口
 
 	r.Use(midware.IpAuthorize())
 
