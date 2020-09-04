@@ -8,7 +8,7 @@ import (
 )
 
 /**
- * 
+ *
  * @Description
  * @Date 2:35 下午 2020/8/24
  **/
@@ -44,12 +44,13 @@ func AddTask(req vojo.TaskInsertReq) int64 {
 
 	// }
 }
+
 /**
- * 
- * @Description //TODO 
+ *
+ * @Description //TODO
  * @Date 2:29 下午 2020/8/24
- * @Param 
- * @return 
+ * @Param
+ * @return
  **/
 func GetTaskByUserId(req *vojo.GetTaskByUserIdReq) []vojo.TasksDao {
 	sqlStr := "SELECT id,task_name, task_cron, url,user_id,_timestamp FROM tasks where user_id=?"
@@ -79,8 +80,19 @@ func GetAllTask() []vojo.TasksDao {
 	return users
 }
 func UpdateTask(req vojo.TaskUpdateReq) int {
-	sqlStr := "update tasks set  task_cron=? , url=? where id=?"
-	_, err := CronDb.Exec(sqlStr, req.CronExpression, req.Url, req.Id)
+	var err error
+	if req.Url != "" && req.CronExpression != "" {
+		sqlStr := "update tasks set  task_cron=? , url=? where id=?"
+		_, err = CronDb.Exec(sqlStr, req.CronExpression, req.Url, req.Id)
+	} else if req.Url != "" && req.CronExpression == "" {
+		sqlStr := "update tasks set   url=? where id=?"
+		_, err = CronDb.Exec(sqlStr, req.Url, req.Id)
+	} else if req.Url == "" && req.CronExpression != "" {
+		sqlStr := "update tasks set  task_cron=? where id=?"
+		_, err = CronDb.Exec(sqlStr, req.CronExpression, req.Id)
+	} else {
+		log.Error("update task error")
+	}
 	if err != nil {
 		log.Errorf("update task error:%v", err.Error())
 		return -1
