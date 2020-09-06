@@ -35,7 +35,7 @@ func TestGrpc() {
 	//
 	//	return nil
 	//}
-	err = grpcurl.InvokeRPC(ctx, desc, nil, "test.MaxSize.Echo", nil, nil, nil)
+	err = grpcurl.InvokeRPC(ctx, desc, ccReflect, "test.MaxSize.Echo", nil, grpcurl.NewDefaultEventHandler(log.BaseGinLog(), desc, grpcurl.NewTextFormatter(false), false), nil)
 
 	if err != nil {
 		log.Error("%s", err.Error())

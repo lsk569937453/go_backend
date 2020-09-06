@@ -10,6 +10,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.4.2
 	github.com/iris-contrib/go.uuid v2.0.0+incompatible
+	github.com/jhump/protoreflect v1.6.0
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/karldoenitz/grpcall v0.0.0-20200325024121-9c718475fa34 // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible
