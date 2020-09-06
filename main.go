@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"go_backend/grpc_call"
+
+	//"github.com/fullstorydev/grpcurl"
 	"github.com/gin-gonic/gin"
 	"go_backend/controller"
 	"go_backend/log"
@@ -10,6 +13,8 @@ import (
 )
 
 func main() {
+
+	grpc_call.TestGrpc()
 	initController()
 
 }

@@ -1,0 +1,19 @@
+syntax = "proto3";
+package test;
+
+message StringMessage {
+    repeated StringSingle ss = 1;
+}
+
+message StringSingle {
+    string id = 1;
+    string name = 2;
+}
+
+message Empty {
+
+}
+
+service MaxSize {
+  rpc Echo(Empty) returns (stream StringMessage) {};
+}
