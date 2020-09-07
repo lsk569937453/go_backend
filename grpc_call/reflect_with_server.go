@@ -38,7 +38,7 @@ func TestGrpc() {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 	ipAndPort := "127.0.0.1:9000"
-	//	ipAndPort := "45.32.63.93:9000"
+	//ipAndPort := "45.32.63.93:9000"
 	ccReflect, err := grpc.DialContext(ctx, ipAndPort, grpc.WithInsecure(), grpc.WithBlock())
 	data := &RequestSu{Data: "{}"}
 	dataStr := "{}"
@@ -123,6 +123,7 @@ func TestGrpc() {
 						// stream 有一个最重要的方法，就是 Recv()，Recv 的返回值就是 *pb.StringMessage，这里面包含了多个 Ss []*StringSingle
 						resp, err = tr.RecvMsg()
 						if err == io.EOF {
+							log.Info("find eof and exit")
 							// Note: If `maxResults` are returned this will never be reached.
 							break
 						}
@@ -130,7 +131,7 @@ func TestGrpc() {
 							fmt.Printf("error %v", err)
 							return
 						}
-						fmt.Printf("%v", resp.String())
+						fmt.Println(resp.String())
 					}
 
 				} else {
