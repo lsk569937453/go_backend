@@ -1,20 +1,53 @@
 package grpc_call
 
 import (
+	"bytes"
 	"context"
-	"github.com/fullstorydev/grpcurl"
+	"fmt"
+	"github.com/golang/protobuf/jsonpb"
+	"github.com/golang/protobuf/proto"
+	"github.com/jhump/protoreflect/dynamic"
+	"github.com/jhump/protoreflect/dynamic/grpcdynamic"
 	"github.com/jhump/protoreflect/grpcreflect"
 	"go_backend/log"
 	"google.golang.org/grpc"
 	reflectpb "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
+	"io"
 	"strings"
 	"time"
 )
 
+type RequestSu struct {
+	Data string
+}
+
+func (tmp *RequestSu) String() string {
+	return tmp.Data
+}
+func (tmp *RequestSu) Reset() {
+}
+func (tmp *RequestSu) ProtoMessage() {
+}
+
+type RequestSupplier func(proto.Message) error
+
+func (tmp RequestSupplier) String() string {
+	return tmp.String()
+}
 func TestGrpc() {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
-	ccReflect, err := grpc.DialContext(ctx, "127.0.0.1:8028", grpc.WithInsecure(), grpc.WithBlock())
+	ipAndPort := "127.0.0.1:9000"
+	//	ipAndPort := "45.32.63.93:9000"
+	ccReflect, err := grpc.DialContext(ctx, ipAndPort, grpc.WithInsecure(), grpc.WithBlock())
+	data := &RequestSu{Data: "{}"}
+	dataStr := "{}"
+	var ext dynamic.ExtensionRegistry
+
+	msgFactory := dynamic.NewMessageFactoryWithExtensionRegistry(&ext)
+
+	stub := grpcdynamic.NewStubWithMessageFactory(ccReflect, msgFactory)
+
 	if err != nil {
 		log.Error("", err.Error())
 	}
@@ -22,7 +55,7 @@ func TestGrpc() {
 	refClient := grpcreflect.NewClient(context.Background(), reflectpb.NewServerReflectionClient(ccReflect))
 	defer refClient.Reset()
 
-	desc := grpcurl.DescriptorSourceFromServer(ctx, refClient)
+	//	desc := grpcurl.DescriptorSourceFromServer(ctx, refClient)
 
 	//requestFunc := func(m proto.Message) error {
 	//
@@ -35,7 +68,8 @@ func TestGrpc() {
 	//
 	//	return nil
 	//}
-	err = grpcurl.InvokeRPC(ctx, desc, ccReflect, "test.MaxSize.Echo", nil, grpcurl.NewDefaultEventHandler(log.BaseGinLog(), desc, grpcurl.NewTextFormatter(false), false), nil)
+
+	//err = grpcurl.InvokeRPC(ctx, desc, ccReflect, "test.MaxSize.Echo", nil, grpcurl.NewDefaultEventHandler(log.BaseGinLog(), desc, grpcurl.NewTextFormatter(false), false), nil)
 
 	if err != nil {
 		log.Error("%s", err.Error())
@@ -71,12 +105,50 @@ func TestGrpc() {
 		for _, methodDescItem := range methodDescriptions {
 			methodDescItem.GetName()
 			methodDescItem.GetService()
+			if methodDescItem.GetName() == "Echo" {
+				if methodDescItem.IsServerStreaming() && methodDescItem.IsClientStreaming() {
+
+				} else if methodDescItem.IsServerStreaming() {
+					req := msgFactory.NewMessage(methodDescItem.GetInputType())
+					jsonpb.Unmarshal(bytes.NewReader([]byte(dataStr)), req)
+
+					tr, err := stub.InvokeRpcServerStream(ctx, methodDescItem, req)
+					//	tr, err := stub.InvokeRpcServerStream(ctx, methodDescItem, data)
+					if err != nil {
+						log.Error("%s", err.Error())
+					}
+					for {
+						var resp proto.Message
+
+						// stream 有一个最重要的方法，就是 Recv()，Recv 的返回值就是 *pb.StringMessage，这里面包含了多个 Ss []*StringSingle
+						resp, err = tr.RecvMsg()
+						if err == io.EOF {
+							// Note: If `maxResults` are returned this will never be reached.
+							break
+						}
+						if err != nil {
+							fmt.Printf("error %v", err)
+							return
+						}
+						fmt.Printf("%v", resp.String())
+					}
+
+				} else {
+					mes, err := stub.InvokeRpc(ctx, methodDescItem, data, nil)
+					if err != nil {
+						log.Error("%s", err.Error())
+					}
+					log.Info("%s", mes.String())
+				}
+
+			}
+
 		}
 	}
-	var res string
-	err = ccReflect.Invoke(ctx, "test.MaxSize.Echo", "{}", res)
-	if err != nil {
-		log.Error("%s", err.Error())
-	}
+	//var res string
+	//err = ccReflect.Invoke(ctx, "test.MaxSize.Echo", "{}", res)
+	//if err != nil {
+	//	log.Error("%s", err.Error())
+	//}
 
 }
