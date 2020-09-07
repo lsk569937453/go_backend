@@ -37,11 +37,13 @@ func (tmp RequestSupplier) String() string {
 func TestGrpc() {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
-	ipAndPort := "127.0.0.1:9000"
+	//ipAndPort := "127.0.0.1:9000"
+	ipAndPort := "127.0.0.1:50051"
 	//ipAndPort := "45.32.63.93:9000"
 	ccReflect, err := grpc.DialContext(ctx, ipAndPort, grpc.WithInsecure(), grpc.WithBlock())
-	data := &RequestSu{Data: "{}"}
-	dataStr := "{}"
+	//data := &RequestSu{Data: "{}"}
+	//	dataStr := "{}"
+	dataStr := "`{\"name\": \"golang world\"}`"
 	var ext dynamic.ExtensionRegistry
 
 	msgFactory := dynamic.NewMessageFactoryWithExtensionRegistry(&ext)
@@ -85,7 +87,9 @@ func TestGrpc() {
 		if strings.Contains(item, "reflection") {
 			log.Info("service: %s, has been filter", item)
 		} else {
-			realServiceName = item
+			if item == "helloworld.Greeter" {
+				realServiceName = item
+			}
 		}
 	}
 
@@ -105,7 +109,7 @@ func TestGrpc() {
 		for _, methodDescItem := range methodDescriptions {
 			methodDescItem.GetName()
 			methodDescItem.GetService()
-			if methodDescItem.GetName() == "Echo" {
+			if methodDescItem.GetName() == "Echo" || methodDescItem.GetName() == "SayGirl" {
 				if methodDescItem.IsServerStreaming() && methodDescItem.IsClientStreaming() {
 
 				} else if methodDescItem.IsServerStreaming() {
@@ -135,7 +139,10 @@ func TestGrpc() {
 					}
 
 				} else {
-					mes, err := stub.InvokeRpc(ctx, methodDescItem, data, nil)
+					req := msgFactory.NewMessage(methodDescItem.GetInputType())
+					jsonpb.Unmarshal(bytes.NewReader([]byte(dataStr)), req)
+
+					mes, err := stub.InvokeRpc(ctx, methodDescItem, req)
 					if err != nil {
 						log.Error("%s", err.Error())
 					}
