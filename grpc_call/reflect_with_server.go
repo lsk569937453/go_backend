@@ -37,9 +37,9 @@ func (tmp RequestSupplier) String() string {
 func TestGrpc() {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
-	//ipAndPort := "127.0.0.1:9000"
-	ipAndPort := "127.0.0.1:50051"
-	//ipAndPort := "45.32.63.93:9000"
+	ipAndPort := "127.0.0.1:9000"
+	//ipAndPort := "127.0.0.1:50051"
+	//	ipAndPort := "45.32.63.93:9000"
 	ccReflect, err := grpc.DialContext(ctx, ipAndPort, grpc.WithInsecure(), grpc.WithBlock())
 	//data := &RequestSu{Data: "{}"}
 	//	dataStr := "{}"
@@ -57,22 +57,6 @@ func TestGrpc() {
 	refClient := grpcreflect.NewClient(context.Background(), reflectpb.NewServerReflectionClient(ccReflect))
 	defer refClient.Reset()
 
-	//	desc := grpcurl.DescriptorSourceFromServer(ctx, refClient)
-
-	//requestFunc := func(m proto.Message) error {
-	//
-	//	reqStats.Sent++
-	//	req := input.Data[0]
-	//	input.Data = input.Data[1:]
-	//	if err := jsonpb.Unmarshal(bytes.NewReader([]byte(req)), m); err != nil {
-	//		return status.Errorf(codes.InvalidArgument, err.Error())
-	//	}
-	//
-	//	return nil
-	//}
-
-	//err = grpcurl.InvokeRPC(ctx, desc, ccReflect, "test.MaxSize.Echo", nil, grpcurl.NewDefaultEventHandler(log.BaseGinLog(), desc, grpcurl.NewTextFormatter(false), false), nil)
-
 	if err != nil {
 		log.Error("%s", err.Error())
 	}
@@ -87,7 +71,7 @@ func TestGrpc() {
 		if strings.Contains(item, "reflection") {
 			log.Info("service: %s, has been filter", item)
 		} else {
-			if item == "helloworld.Greeter" {
+			if item == "test.Greeter" {
 				realServiceName = item
 			}
 		}
@@ -109,7 +93,7 @@ func TestGrpc() {
 		for _, methodDescItem := range methodDescriptions {
 			methodDescItem.GetName()
 			methodDescItem.GetService()
-			if methodDescItem.GetName() == "Echo" || methodDescItem.GetName() == "SayGirl" {
+			if methodDescItem.GetName() == "SayGirl" {
 				if methodDescItem.IsServerStreaming() && methodDescItem.IsClientStreaming() {
 
 				} else if methodDescItem.IsServerStreaming() {
