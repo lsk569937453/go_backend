@@ -64,6 +64,7 @@ func initController() {
 	r.POST("/api/task/delById", controller.TaskDelete)
 	r.POST("/api/taskHistory/getByTaskId", controller.TaskHistoryGetByTaskId)
 	r.POST("/api/taskHistory/getByPage", controller.TaskHistoryGetByPage)
+	r.POST("/api/grpc/getServiceList", controller.GrpcGetServiceList)
 	r.Run(":9393") // listen and serve
 	//	r.RunTLS(":9393", "resource/client.pem", "resource/client.key")
 

@@ -10,11 +10,14 @@ replace (
 )
 
 require (
+	github.com/99designs/gqlgen v0.12.2
 	github.com/Unknwon/goconfig v0.0.0-20200817131228-2444c9802e76
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis/v8 v8.0.0-beta.10
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.4.2
+	github.com/graphql-go/graphql v0.7.9 // indirect
+	github.com/graphql-go/handler v0.2.3
 	github.com/iris-contrib/go.uuid v2.0.0+incompatible
 	github.com/jhump/protoreflect v1.7.0
 	github.com/jmoiron/sqlx v1.2.0
