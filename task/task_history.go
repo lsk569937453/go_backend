@@ -8,17 +8,18 @@ import (
 
 func init() {
 	c := cron.New(cron.WithSeconds())
-	taslCron:="0 0 0/1 * * ? "
+	taslCron := "0 0 0/1 * * ? "
 	c.AddFunc(taslCron, func() {
-			checkAndDelete()
+		checkAndDelete()
 	})
 
 	c.Start()
 }
 func checkAndDelete() {
-	count:=dao.HitoryCount()
-	if count>60000{
-		dao.HitoryDeleteLast(20000)
+	count := dao.HitoryCount()
+	//modify the history count and delete the count
+	if count > 30000 {
+		dao.HitoryDeleteLast(10000)
 	}
-	log.Info("history count is %d",count)
+	log.Info("history count is %d", count)
 }
