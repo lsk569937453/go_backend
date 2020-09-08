@@ -16,11 +16,12 @@ import (
 var cronJob *cron.Cron
 
 /**
- * 
+ *
  * @Description  get all the task and exec the task cron
  * @Date 2:36 下午 2020/8/24
  **/
 func init() {
+	start := time.Now()
 
 	alltask := dao.GetAllTask() //get All the task
 	c := cron.New(cron.WithSeconds())
@@ -35,10 +36,16 @@ func init() {
 		AddTask(cron, url, taskId)
 
 	}
+	//记录结束时间
+	elapsed := time.Since(start)
+
+	//输出执行时间。
+	fmt.Println("App elapsed: ", elapsed)
 
 }
+
 /**
- * 
+ *
  * @Description  add the task into the memory
 
  * @Date 2:40 下午 2020/8/31
@@ -49,29 +56,30 @@ func AddTask(cron string, url string, taskId int) {
 	})
 
 	if err != nil {
-		errlog:=fmt.Sprintf("AddTask error:%s,taskID:%d,cron:%s,url:%s",err.Error(),taskId,cron,url)
-		log.Error("",errlog)
+		errlog := fmt.Sprintf("AddTask error:%s,taskID:%d,cron:%s,url:%s", err.Error(), taskId, cron, url)
+		log.Error("", errlog)
 	} else {
 		saveToRedis(taskId, id)
 
 	}
 }
+
 /**
  *
  * @Description  delete the cron task by taskId
  * @Date 2:54 下午 2020/8/24
  **/
 func DeleteTask(taskId int) {
-	stringID:=strconv.Itoa(taskId)
-	localTaskId:=redis.Get(stringID)
-	if localTaskId==""{
+	stringID := strconv.Itoa(taskId)
+	localTaskId := redis.Get(stringID)
+	if localTaskId == "" {
 		log.Info("can not find taskID in redis")
 		return
 	}
-	localTaskIdInt,err:=strconv.Atoi(localTaskId)
-	if err!=nil{
-		log.Error("DeleteTask error",err.Error())
-	}else {
+	localTaskIdInt, err := strconv.Atoi(localTaskId)
+	if err != nil {
+		log.Error("DeleteTask error", err.Error())
+	} else {
 		cronJob.Remove(cron.EntryID(localTaskIdInt))
 	}
 }
@@ -84,6 +92,7 @@ func saveToRedis(taskMysqlId int, taskLocalId cron.EntryID) {
 	string2 := strconv.Itoa(int(taskLocalId))
 	redis.Set(string1, string2)
 }
+
 /**
  *
  * @Description  exec the task at the scheduled time
@@ -98,6 +107,7 @@ func dotask(url string, taskId int) {
 	}()
 
 }
+
 /**
  *
  * @Description  request the url with http get method
@@ -112,12 +122,12 @@ func doReq(url string, taskId int) vojo.TasksHistory {
 		responseBody = err.Error()
 		status = -1
 
-		errorlog:=fmt.Sprintf("error message:%s,taskId:%d",err.Error(),taskId)
+		errorlog := fmt.Sprintf("error message:%s,taskId:%d", err.Error(), taskId)
 		log.Error("doReq error,%s", errorlog)
 	} else {
 		responseBody = string(resp)
 	}
-	base64Res:=base64.StdEncoding.EncodeToString([]byte(responseBody))
+	base64Res := base64.StdEncoding.EncodeToString([]byte(responseBody))
 
 	var historyDao vojo.TasksHistory
 	historyDao.Exec_code = status
