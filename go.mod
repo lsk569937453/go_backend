@@ -3,8 +3,9 @@ module go_backend
 go 1.14
 
 replace (
-	github.com/golang/protobuf => github.com/golang/protobuf v1.4.2
+	github.com/golang/protobuf => github.com/golang/protobuf v1.3.5
 	github.com/jhump/protoreflect => github.com/jhump/protoreflect v1.7.0
+	google.golang.org/genproto => google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
 	//google.golang.org/protobuf => github.com/golang/protobuf v1.4.2
 	google.golang.org/grpc => google.golang.org/grpc v1.31.1
 )
