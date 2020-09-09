@@ -66,6 +66,7 @@ func initController() {
 	r.POST("/api/taskHistory/getByPage", controller.TaskHistoryGetByPage)
 	r.POST("/api/grpc/getServiceList", controller.GrpcGetServiceList)
 	r.POST("/api/grpc/remoteInvoke", controller.GrpcRemoteInvoke)
+	r.GET("/api/db/dbPing", controller.DbPing)
 	fmt.Println("the server has started in the 9393")
 	r.Run(":9393") // listen and serve
 	//	r.RunTLS(":9393", "resource/client.pem", "resource/client.key")
