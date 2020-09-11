@@ -58,7 +58,7 @@ func findAllServiceAndMethod(realServiceName string, refClient *grpcreflect.Clie
 		serviceName := item.GetFullyQualifiedName()
 		for _, methodDescItem := range methodDescriptions {
 			methodName := methodDescItem.GetName()
-			fmt.Println(methodDescItem.GetInputType().String() + "~~~~~~~~~" + methodDescItem.GetOutputType().String())
+			//	fmt.Println(methodDescItem.GetInputType().String() + "~~~~~~~~~" + methodDescItem.GetOutputType().String())
 			key := serviceName + "$$" + methodName
 			vaule := 0
 			if methodDescItem.IsServerStreaming() {
