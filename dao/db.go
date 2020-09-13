@@ -11,8 +11,6 @@ import (
 )
 
 var (
-
-
 	userName  string = ""
 	password  string = ""
 	ipAddrees string = ""
@@ -27,7 +25,7 @@ func init() {
 	CronDb = InitDb()
 }
 func InitDb() *sqlx.DB {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s", userName, password, ipAddrees, port, dbName, charset)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&timeout=1s&readTimeout=1s", userName, password, ipAddrees, port, dbName, charset)
 	Db, err := sqlx.Open("mysql", dsn)
 	if err != nil {
 		fmt.Printf("mysql connect failed, detail is [%v]", err.Error())

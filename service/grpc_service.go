@@ -9,6 +9,7 @@ import (
 	"github.com/jhump/protoreflect/desc"
 	"github.com/jhump/protoreflect/dynamic"
 	"github.com/jhump/protoreflect/dynamic/grpcdynamic"
+	"go_backend/vojo"
 	reflectpb "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
 	"io"
 	"strings"
@@ -21,7 +22,7 @@ import (
 
 //
 //Get all the Service Name
-func GrpcGetServiceList(ipAndPortString string) map[string]int {
+func GrpcGetServiceList(ipAndPortString string) *vojo.GrpcRefServerInstanceFormat {
 	refClient, _ := getRefClient(ipAndPortString)
 	defer refClient.Reset()
 	service, err := refClient.ListServices()
@@ -29,18 +30,21 @@ func GrpcGetServiceList(ipAndPortString string) map[string]int {
 	if err != nil {
 		log.Error("ListServices error%s", err.Error())
 	}
-	resultMap := make(map[string]int)
+	serviceInstanceMap := make(map[string]*vojo.GrpcRefService, 0)
+	result := &vojo.GrpcRefServerInstance{
+		Services: serviceInstanceMap,
+	}
 	//filter the default service name:grpc.reflection.v1alpha.ServerReflection
 	for _, item := range service {
 		if !strings.Contains(item, "grpc.reflection") {
-			findAllServiceAndMethod(item, refClient, resultMap)
+			findAllServiceAndMethod(item, refClient, result)
 		}
 	}
-	return resultMap
+	return vojo.ExchangeGrpcServiceLisFormat(result)
 }
 
 //find all the service and method name
-func findAllServiceAndMethod(realServiceName string, refClient *grpcreflect.Client, mapRes map[string]int) {
+func findAllServiceAndMethod(realServiceName string, refClient *grpcreflect.Client, grpcServiceInstance *vojo.GrpcRefServerInstance) {
 	log.Info("realServiceName:%s", realServiceName)
 	fileDesc, err := refClient.FileContainingSymbol(realServiceName)
 	if err != nil {
@@ -56,21 +60,50 @@ func findAllServiceAndMethod(realServiceName string, refClient *grpcreflect.Clie
 		methodDescriptions := item.GetMethods()
 		//package+service
 		serviceName := item.GetFullyQualifiedName()
+		methodMap := make(map[string]*vojo.GrpcRefMethod, 0)
+
+		serviceInstance := &vojo.GrpcRefService{
+			ServiceName: serviceName,
+			Methods:     methodMap,
+		}
+		_, ok := grpcServiceInstance.Services[serviceName]
+		if ok {
+			serviceInstance = grpcServiceInstance.Services[serviceName]
+		} else {
+			grpcServiceInstance.Services[serviceName] = serviceInstance
+		}
 		for _, methodDescItem := range methodDescriptions {
 			methodName := methodDescItem.GetName()
-			//	fmt.Println(methodDescItem.GetInputType().String() + "~~~~~~~~~" + methodDescItem.GetOutputType().String())
-			key := serviceName + "$$" + methodName
-			vaule := 0
-			if methodDescItem.IsServerStreaming() {
-				vaule = 0
-			} else if methodDescItem.IsServerStreaming() && methodDescItem.IsClientStreaming() {
-				vaule = 1
-			} else if !methodDescItem.IsClientStreaming() {
-				vaule = 2
+			inputName := methodDescItem.GetInputType().GetFullyQualifiedName()
+
+			methodInstance := &vojo.GrpcRefMethod{
+				MethodName: methodName,
+				InputName:  inputName,
+				Fields:     make(map[string]*vojo.GrpcRefField, 0),
 			}
 
-			mapRes[key] = vaule
+			_, ok = grpcServiceInstance.Services[serviceName].Methods[methodName]
+			if ok {
+				methodInstance = grpcServiceInstance.Services[serviceName].Methods[methodName]
+			} else {
+				grpcServiceInstance.Services[serviceName].Methods[methodName] = methodInstance
+			}
+			fieldMap := methodInstance.Fields
+
+			for _, fieldItem := range methodDescItem.GetInputType().GetFields() {
+				fieldName := fieldItem.GetName()
+				fieldType := fieldItem.GetType().String()
+				field := &vojo.GrpcRefField{
+					FieldName: fieldName,
+					Type:      fieldType,
+				}
+				fieldMap[fieldName] = field
+			}
+
+			//	serviceInstance.Methods[methodName] = methodInstance
+
 		}
+
 	}
 
 }
