@@ -1,5 +1,7 @@
 package vojo
 
+import "sort"
+
 type GrpcRefServerInstanceFormat struct {
 	Services []*GrpcRefServiceFormat `json:"services" `
 }
@@ -14,9 +16,14 @@ type GrpcRefMethodFormat struct {
 
 	Fields []*GrpcRefField `json:"fields" `
 }
+type grpcServiceFormatSlice []*GrpcRefServiceFormat
+
+func (s grpcServiceFormatSlice) Len() int           { return len(s) }
+func (s grpcServiceFormatSlice) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s grpcServiceFormatSlice) Less(i, j int) bool { return s[i].ServiceName < s[j].ServiceName }
 
 func ExchangeGrpcServiceLisFormat(res *GrpcRefServerInstance) *GrpcRefServerInstanceFormat {
-	grpcServiceList := make([]*GrpcRefServiceFormat, 0)
+	grpcServiceList := make(grpcServiceFormatSlice, 0)
 
 	for _, serviceItem := range res.Services {
 
@@ -42,6 +49,7 @@ func ExchangeGrpcServiceLisFormat(res *GrpcRefServerInstance) *GrpcRefServerInst
 		grpcServiceList = append(grpcServiceList, serviceInstance)
 
 	}
+	sort.Stable(grpcServiceList)
 	realresult := &GrpcRefServerInstanceFormat{
 		Services: grpcServiceList,
 	}
