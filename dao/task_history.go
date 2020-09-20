@@ -96,7 +96,9 @@ func HistotyGetByPage(req *vojo.GetHistoryByPage) []vojo.TasksHistory {
 func HitoryCount() int64 {
 	sqlStr := "select count(*) from task_exec_history"
 	var count int64
-	err := CronDb.QueryRow(sqlStr).Scan(&count)
+	rows := CronDb.QueryRow(sqlStr)
+
+	err := rows.Scan(&count)
 	if err != nil {
 		log.Error("del task error:%v", err.Error())
 		return -1

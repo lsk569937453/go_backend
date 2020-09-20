@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 	"go_backend/dao"
 	"go_backend/log"
 	"go_backend/task"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
 /**
  *
  * @Description //TODO
@@ -83,11 +85,34 @@ func TaskAdd(c *gin.Context) {
 	if error == nil {
 		//log.Info(form.Name, form.CronExpression)
 
+		var res vojo.BaseRes
+		//validate := validator.New()
+		//err := validate.Struct(form)
+		err := form.UserValidator()
+		if err != nil {
+			errorMessageArray := make([]*vojo.ErrorMessage, 0)
+			for _, err := range err.(validator.ValidationErrors) {
+				errorStructObj := &vojo.ErrorMessage{}
+				errorStructObj.Field = err.Field()
+				if err.Field() == "CronExpression" {
+					errorStructObj.Message = "cronExpression is null or illegal "
+				} else if err.Field() == "Url" {
+					errorStructObj.Message = "url is null or not illegal"
+				} else {
+					errorStructObj.Message = "name is null or not illegal"
+				}
+				errorMessageArray = append(errorMessageArray, errorStructObj)
+			}
+
+			res.Message = errorMessageArray
+			res.Rescode = -2
+			c.JSON(http.StatusOK, res)
+			return
+
+		}
 		tt := dao.AddTask(form)
 
 		task.AddTask(form.CronExpression, form.Url, int(tt))
-
-		var res vojo.BaseRes
 
 		res.Message = "添加任务成功"
 
@@ -101,6 +126,7 @@ func TaskAdd(c *gin.Context) {
 	}
 
 }
+
 /**
  *
  * @Description  update the task
@@ -124,7 +150,7 @@ func TaskUpdate(c *gin.Context) {
 			//if update the task success,then remove the cron job
 			//in the memory,and add  the new cronjob
 			task.DeleteTask(form.Id)
-			task.AddTask(form.CronExpression,form.Url,form.Id)
+			task.AddTask(form.CronExpression, form.Url, form.Id)
 		} else {
 			res.Message = "update fail"
 		}

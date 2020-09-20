@@ -30,6 +30,8 @@ func InitDb() *sqlx.DB {
 	if err != nil {
 		fmt.Printf("mysql connect failed, detail is [%v]", err.Error())
 	}
+	Db.SetMaxIdleConns(20)
+	Db.SetMaxOpenConns(50)
 	return Db
 }
 func initConfig() {
