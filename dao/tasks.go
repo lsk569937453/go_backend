@@ -53,7 +53,7 @@ func AddTask(req vojo.TaskInsertReq) int64 {
  * @return
  **/
 func GetTaskByUserId(req *vojo.GetTaskByUserIdReq) []vojo.TasksDao {
-	sqlStr := "SELECT id,task_name, task_cron, url,user_id,_timestamp FROM tasks where user_id=?"
+	sqlStr := "SELECT id,task_name, task_cron, url,user_id,_timestamp,req_type,task_status FROM tasks where user_id=?"
 	var users []vojo.TasksDao
 	err := CronDb.Select(&users, sqlStr, req.UserId)
 	if err != nil {
@@ -109,6 +109,12 @@ func DelTask(req vojo.TaskDelByIdReq) int {
 	}
 
 	return 0
+}
+func UpdateTaskStatusByTaskId(taskId int, status int) error {
+	sqlStr := "update tasks set  task_status=? where id=?"
+	_, err := CronDb.Exec(sqlStr, status, taskId)
+
+	return err
 }
 
 //func GetTaskByUserId() []vojo.TasksDao {

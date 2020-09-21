@@ -21,9 +21,16 @@ var cronJob *cron.Cron
  * @Date 2:36 下午 2020/8/24
  **/
 func init() {
+	go func() {
+		startTask()
+	}()
+
+}
+func startTask() {
 	start := time.Now()
 
 	alltask := dao.GetAllTask() //get All the task
+	alltask = FilterTask(alltask)
 	c := cron.New(cron.WithSeconds())
 	c.Start()
 	cronJob = c
@@ -135,4 +142,24 @@ func doReq(url string, taskId int) vojo.TasksHistory {
 	historyDao.Exec_time = strconv.FormatInt(execTime.Milliseconds(), 10)
 	historyDao.Task_id = taskId
 	return historyDao
+}
+
+//filter the task by the result
+func FilterTask(taskList []vojo.TasksDao) []vojo.TasksDao {
+	resultList := make([]vojo.TasksDao, 0)
+	for _, item := range taskList {
+		url := item.Url
+		_, _, err := fasthttp.Get(nil, url)
+		if err != nil {
+			log.Error("taskID:%d,taskUrl:%s could not send req", item.Id, item.Url)
+			dao.UpdateTaskStatusByTaskId(item.Id, vojo.RES_ERROR)
+			continue
+		} else {
+			dao.UpdateTaskStatusByTaskId(item.Id, vojo.RES_NORMAL)
+
+		}
+		resultList = append(resultList, item)
+
+	}
+	return resultList
 }
