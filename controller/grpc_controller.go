@@ -17,13 +17,20 @@ func GrpcGetServiceList(c *gin.Context) {
 	if error == nil {
 		//log.Info(form.Name, form.CronExpression)
 
-		tt := service.GrpcGetServiceList(req.Url)
+		tt, err := service.GrpcGetServiceList(req.Url)
 
 		var res vojo.BaseRes
 		res.Rescode = 0
-		data, _ := json.Marshal(tt)
-		log.Info("%s", string(data))
-		res.Message = tt
+
+		if err != nil {
+			res.Rescode = -1
+			res.Message = err.Error()
+		} else {
+			data, _ := json.Marshal(tt)
+			log.Info("%s", string(data))
+			res.Message = tt
+		}
+
 		// fmt.Println(res) // 正常输出msg内容
 		c.JSON(http.StatusOK, res)
 
@@ -41,13 +48,17 @@ func GrpcRemoteInvoke(c *gin.Context) {
 	if error == nil {
 		//log.Info(form.Name, form.CronExpression)
 
-		tt := service.GrpcRemoteInvoke(req.Url, req.ServiceName, req.MethodName, req.ReqJson)
-
+		tt, err := service.GrpcRemoteInvoke(req.Url, req.ServiceName, req.MethodName, req.ReqJson)
 		var res vojo.BaseRes
 		res.Rescode = 0
-		data, _ := json.Marshal(tt)
-		log.Info("%s", string(data))
-		res.Message = tt
+		if err != nil {
+			res.Message = err.Error()
+		} else {
+			data, _ := json.Marshal(tt)
+			log.Info("%s", string(data))
+			res.Message = tt
+		}
+
 		// fmt.Println(res) // 正常输出msg内容
 		c.JSON(http.StatusOK, res)
 

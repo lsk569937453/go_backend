@@ -110,7 +110,7 @@ func TaskAdd(c *gin.Context) {
 			return
 
 		}
-		tt := dao.AddTask(form)
+		tt := dao.AddTask(&form)
 
 		task.AddTask(form.CronExpression, form.Url, int(tt))
 

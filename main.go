@@ -53,8 +53,6 @@ func initController() {
 	r.Use(midware.IpAuthorize())
 
 	//r.Use(gin.LoggerWithWriter(log.BaseGinLog()))
-	r.POST("/api/check/task", controller.InitRouter)
-	r.GET("/api/search", controller.Search)
 	r.POST("/api/task/add", controller.TaskAdd)
 	r.GET("/api/task/getAll", controller.TaskGet)
 	r.POST("/api/task/getByUserId", controller.TaskGetByUserId)

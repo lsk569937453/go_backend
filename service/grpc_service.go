@@ -22,9 +22,13 @@ import (
 
 //
 //Get all the Service Name
-func GrpcGetServiceList(ipAndPortString string) *vojo.GrpcRefServerInstanceFormat {
-	refClient, _ := getRefClient(ipAndPortString)
+func GrpcGetServiceList(ipAndPortString string) (*vojo.GrpcRefServerInstanceFormat, error) {
+	refClient, _, err := getRefClient(ipAndPortString)
+	if err != nil {
+		return nil, err
+	}
 	defer refClient.Reset()
+
 	service, err := refClient.ListServices()
 	log.Info("service List is:%v", service)
 	if err != nil {
@@ -40,7 +44,7 @@ func GrpcGetServiceList(ipAndPortString string) *vojo.GrpcRefServerInstanceForma
 			findAllServiceAndMethod(item, refClient, result)
 		}
 	}
-	return vojo.ExchangeGrpcServiceLisFormat(result)
+	return vojo.ExchangeGrpcServiceLisFormat(result), nil
 }
 
 //find all the service and method name
@@ -113,8 +117,11 @@ func findAllServiceAndMethod(realServiceName string, refClient *grpcreflect.Clie
  * @Description invokeGrpc from ipPort,serviceName,methodName,reqBody
  * @Date 8:11 上午 2020/9/9
  **/
-func GrpcRemoteInvoke(ipAndPortString string, serviceName string, methodName string, reqBody string) string {
-	refClient, ccReflect := getRefClient(ipAndPortString)
+func GrpcRemoteInvoke(ipAndPortString string, serviceName string, methodName string, reqBody string) (string, error) {
+	refClient, ccReflect, err := getRefClient(ipAndPortString)
+	if err != nil {
+		return "", err
+	}
 	defer ccReflect.Close()
 	defer refClient.Reset()
 	service, err := refClient.ListServices()
@@ -139,7 +146,7 @@ func GrpcRemoteInvoke(ipAndPortString string, serviceName string, methodName str
 		log.Error("methodDesc is null")
 
 	}
-	return result
+	return result, nil
 
 }
 
@@ -240,23 +247,23 @@ func findMethodDesc(realServiceName string, refClient *grpcreflect.Client, dstSe
  * @Description  get grpcReflect.client from ipandport
  * @Date 8:14 上午 2020/9/9
  **/
-func getRefClient(ipAndPortString string) (*grpcreflect.Client, *grpc.ClientConn) {
-	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
-	//defer cancel()
+func getRefClient(ipAndPortString string) (*grpcreflect.Client, *grpc.ClientConn, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 	ipAndPort := ipAndPortString
 	ccReflect, err := grpc.DialContext(ctx, ipAndPort, grpc.WithInsecure(), grpc.WithBlock())
 
 	if err != nil {
+		if err == context.DeadlineExceeded {
+			log.Error("DeadlineExceeded:", err.Error())
+		}
 		log.Error("", err.Error())
+		return nil, nil, err
 	}
 	//defer ccReflect.Close()
 	refClient := grpcreflect.NewClient(context.Background(), reflectpb.NewServerReflectionClient(ccReflect))
 	defer refClient.Reset()
-
-	if err != nil {
-		log.Error("%s", err.Error())
-	}
-	return refClient, ccReflect
+	return refClient, ccReflect, nil
 
 }
 

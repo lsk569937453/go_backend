@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-func TestAddTaskFail(t *testing.T) {
-	history := &vojo.TaskInsertReq{}
-	err := AddTask(history)
-	assert.Equal(t, int64(-1), err)
+func TestAddTaskSuccess(t *testing.T) {
+	taskInsertReq := &vojo.TaskInsertReq{}
+	err := AddTask(taskInsertReq)
+	assert.NotEqual(t, int64(-1), err)
 }
