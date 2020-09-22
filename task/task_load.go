@@ -120,7 +120,7 @@ func dotask(url string, taskId int) {
  * @Description  request the url with http get method
  * @Date 11:34 上午 2020/8/25
  **/
-func doReq(url string, taskId int) vojo.TasksHistory {
+func doReq(url string, taskId int) *vojo.TasksHistory {
 	preTime := time.Now()
 	status, resp, err := fasthttp.Get(nil, url)
 	execTime := time.Since(preTime)
@@ -136,7 +136,7 @@ func doReq(url string, taskId int) vojo.TasksHistory {
 	}
 	base64Res := base64.StdEncoding.EncodeToString([]byte(responseBody))
 
-	var historyDao vojo.TasksHistory
+	historyDao := &vojo.TasksHistory{}
 	historyDao.Exec_code = status
 	historyDao.Exec_result = base64Res
 	historyDao.Exec_time = strconv.FormatInt(execTime.Milliseconds(), 10)

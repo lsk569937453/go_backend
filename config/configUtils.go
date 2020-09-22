@@ -12,6 +12,10 @@ func init() {
 	configNew, err := goconfig.LoadConfigFile("conf/conf.ini")
 	if err != nil {
 		log.Error("config utils init error:%s", err.Error())
+		configNew, err = goconfig.LoadConfigFile("../conf/conf.ini")
+		if err != nil {
+			panic(err)
+		}
 	}
 	config = configNew
 }

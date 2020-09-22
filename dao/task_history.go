@@ -7,19 +7,26 @@ import (
 	"reflect"
 )
 
-func HistoryInsert(history vojo.TasksHistory) {
+func HistoryInsert(history *vojo.TasksHistory) error {
+	err := history.TaskHistoryInsertValidator()
+	if err != nil {
+		return err
+	}
+
 	params := make(map[string]interface{})
 
-	elem := reflect.ValueOf(&history).Elem()
+	elem := reflect.ValueOf(history).Elem()
 	relType := elem.Type()
 	for i := 0; i < relType.NumField(); i++ {
 		params[relType.Field(i).Name] = elem.Field(i).Interface()
 	}
 
-	_, err := CronDb.NamedExec(`insert into task_exec_history ( task_id, exec_time , exec_result,exec_code)values(:Task_id,:Exec_time,:Exec_result,:Exec_code)`, params)
+	_, err = CronDb.NamedExec(`insert into task_exec_history ( task_id, exec_time , exec_result,exec_code)values(:Task_id,:Exec_time,:Exec_result,:Exec_code)`, params)
 	if err != nil {
 		log.Error("HistoryInsert failed, err:%v", err.Error())
+		return err
 	}
+	return nil
 
 }
 

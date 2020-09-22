@@ -12,10 +12,10 @@ import (
  * @Description
  * @Date 2:35 下午 2020/8/24
  **/
-func AddTask(req vojo.TaskInsertReq) int64 {
+func AddTask(req *vojo.TaskInsertReq) int64 {
 	params := make(map[string]interface{})
 
-	elem := reflect.ValueOf(&req).Elem()
+	elem := reflect.ValueOf(req).Elem()
 	relType := elem.Type()
 	for i := 0; i < relType.NumField(); i++ {
 		params[relType.Field(i).Name] = elem.Field(i).Interface()
@@ -36,13 +36,6 @@ func AddTask(req vojo.TaskInsertReq) int64 {
 			//task.AddTask(req.CronExpression, req.Url, int(insertId))
 		}
 	}
-
-	// var users []vojo.TasksDao
-	// err = nstmt.Select(&users, map[string]interface{}{"user_id": "-1"})
-	// if err != nil {
-	// 	fmt.Printf("query failed, err:%v\n", err)
-
-	// }
 }
 
 /**

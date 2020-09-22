@@ -23,6 +23,7 @@ require (
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/smartystreets/goconvey v1.6.4 // indirect
+	github.com/stretchr/testify v1.6.1
 	github.com/valyala/fasthttp v1.16.0
 	go.uber.org/zap v1.16.0
 	google.golang.org/grpc v1.31.1
