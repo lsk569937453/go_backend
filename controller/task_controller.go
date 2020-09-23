@@ -29,7 +29,6 @@ func TaskGet(c *gin.Context) {
 	res.Message = tt
 	// fmt.Println(res) // 正常输出msg内容
 	c.JSON(http.StatusOK, res)
-
 }
 func TaskGetByUserId(c *gin.Context) {
 	var req vojo.GetTaskByUserIdReq
@@ -39,13 +38,19 @@ func TaskGetByUserId(c *gin.Context) {
 	if error == nil {
 		//log.Info(form.Name, form.CronExpression)
 
-		tt := dao.GetTaskByUserId(&req)
-
 		var res vojo.BaseRes
-		res.Rescode = 0
-		data, _ := json.Marshal(tt)
-		log.Info("%s", string(data))
-		res.Message = tt
+		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
+		tt, err := dao.GetTaskByUserId(&req)
+		if err != nil {
+			res.Rescode = vojo.ERROR_RESPONSE_STATUS
+			res.Message = err.Error()
+		} else {
+
+			data, _ := json.Marshal(tt)
+			log.Info("%s", string(data))
+			res.Message = tt
+		}
+
 		// fmt.Println(res) // 正常输出msg内容
 		c.JSON(http.StatusOK, res)
 
@@ -62,13 +67,19 @@ func TaskGetById(c *gin.Context) {
 	if error == nil {
 		//log.Info(form.Name, form.CronExpression)
 
-		tt := dao.GetTaskById(&req)
-
 		var res vojo.BaseRes
-		res.Rescode = 0
-		data, _ := json.Marshal(tt)
-		log.Info("%s", string(data))
-		res.Message = tt
+		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
+		tt, err := dao.GetTaskById(&req)
+		if err != nil {
+			res.Rescode = vojo.ERROR_RESPONSE_STATUS
+			res.Message = err.Error()
+		} else {
+
+			data, _ := json.Marshal(tt)
+			log.Info("%s", string(data))
+			res.Message = tt
+		}
+
 		// fmt.Println(res) // 正常输出msg内容
 		c.JSON(http.StatusOK, res)
 
@@ -86,8 +97,6 @@ func TaskAdd(c *gin.Context) {
 		//log.Info(form.Name, form.CronExpression)
 
 		var res vojo.BaseRes
-		//validate := validator.New()
-		//err := validate.Struct(form)
 		err := form.UserValidator()
 		if err != nil {
 			errorMessageArray := make([]*vojo.ErrorMessage, 0)
@@ -134,6 +143,7 @@ func TaskAdd(c *gin.Context) {
  **/
 func TaskUpdate(c *gin.Context) {
 	var form vojo.TaskUpdateReq
+	form.Id = -1
 	// message := c.BindJSON("message")
 	// nick := c.PostForm("nick")
 	error := c.BindJSON(&form)
@@ -143,16 +153,17 @@ func TaskUpdate(c *gin.Context) {
 		tt := dao.UpdateTask(form)
 
 		var res vojo.BaseRes
-		res.Rescode = tt
+		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
 
-		if tt == 0 {
+		if tt == nil {
 			res.Message = "update success"
 			//if update the task success,then remove the cron job
 			//in the memory,and add  the new cronjob
 			task.DeleteTask(form.Id)
 			task.AddTask(form.CronExpression, form.Url, form.Id)
 		} else {
-			res.Message = "update fail"
+			res.Message = tt.Error()
+			res.Rescode = -1
 		}
 		c.JSON(http.StatusOK, res)
 
@@ -171,13 +182,15 @@ func TaskDelete(c *gin.Context) {
 		tt := dao.DelTask(req)
 
 		var res vojo.BaseRes
-		res.Rescode = tt
+		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
 
-		if tt == 0 {
+		if tt == nil {
 			task.DeleteTask(req.Id)
-			res.Message = "删除成功"
+			res.Message = "delete success"
 		} else {
-			res.Message = "删除失败"
+			res.Rescode = vojo.ERROR_RESPONSE_STATUS
+
+			res.Message = tt.Error()
 		}
 		//var res vojo.CheckTaskRes
 		//res.ResponseCode = 0

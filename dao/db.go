@@ -5,6 +5,7 @@ import (
 	"go_backend/config"
 	"go_backend/log"
 	"strconv"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -30,6 +31,8 @@ func InitDb() *sqlx.DB {
 	if err != nil {
 		fmt.Printf("mysql connect failed, detail is [%v]", err.Error())
 	}
+	Db.SetConnMaxLifetime(3600 * time.Second)
+
 	Db.SetMaxIdleConns(20)
 	Db.SetMaxOpenConns(50)
 	return Db

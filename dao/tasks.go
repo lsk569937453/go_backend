@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"database/sql"
+	"fmt"
 	"go_backend/log"
 	"go_backend/vojo"
 
@@ -45,23 +47,25 @@ func AddTask(req *vojo.TaskInsertReq) int64 {
  * @Param
  * @return
  **/
-func GetTaskByUserId(req *vojo.GetTaskByUserIdReq) []vojo.TasksDao {
+func GetTaskByUserId(req *vojo.GetTaskByUserIdReq) ([]vojo.TasksDao, error) {
 	sqlStr := "SELECT id,task_name, task_cron, url,user_id,_timestamp,req_type,task_status FROM tasks where user_id=?"
 	var users []vojo.TasksDao
 	err := CronDb.Select(&users, sqlStr, req.UserId)
 	if err != nil {
 		log.Errorf("query failed, err:%v", err.Error())
+		return nil, err
 	}
-	return users
+	return users, nil
 }
-func GetTaskById(req *vojo.GetTaskByIdReq) []vojo.TasksDao {
+func GetTaskById(req *vojo.GetTaskByIdReq) ([]vojo.TasksDao, error) {
 	sqlStr := "SELECT id,task_name, task_cron, url,user_id ,_timestamp FROM tasks where id=?"
 	var users []vojo.TasksDao
 	err := CronDb.Select(&users, sqlStr, req.Id)
 	if err != nil {
 		log.Errorf("query failed, err:%v", err.Error())
+		return nil, err
 	}
-	return users
+	return users, nil
 }
 func GetAllTask() []vojo.TasksDao {
 	sqlStr := "SELECT id,task_name, task_cron, url,user_id FROM tasks"
@@ -72,36 +76,53 @@ func GetAllTask() []vojo.TasksDao {
 	}
 	return users
 }
-func UpdateTask(req vojo.TaskUpdateReq) int {
+func UpdateTask(req vojo.TaskUpdateReq) error {
 	var err error
+	var sqlResult sql.Result
 	if req.Url != "" && req.CronExpression != "" {
 		sqlStr := "update tasks set  task_cron=? , url=? where id=?"
-		_, err = CronDb.Exec(sqlStr, req.CronExpression, req.Url, req.Id)
+		sqlResult, err = CronDb.Exec(sqlStr, req.CronExpression, req.Url, req.Id)
 	} else if req.Url != "" && req.CronExpression == "" {
 		sqlStr := "update tasks set   url=? where id=?"
-		_, err = CronDb.Exec(sqlStr, req.Url, req.Id)
+		sqlResult, err = CronDb.Exec(sqlStr, req.Url, req.Id)
 	} else if req.Url == "" && req.CronExpression != "" {
 		sqlStr := "update tasks set  task_cron=? where id=?"
-		_, err = CronDb.Exec(sqlStr, req.CronExpression, req.Id)
+		sqlResult, err = CronDb.Exec(sqlStr, req.CronExpression, req.Id)
 	} else {
 		log.Error("update task error")
 	}
+
 	if err != nil {
 		log.Errorf("update task error:%v", err.Error())
-		return -1
+		return err
+	}
+	rowAffected, err := sqlResult.RowsAffected()
+	if err != nil {
+		log.Errorf("update task rowAffected:%v", err.Error())
+		return err
+	} else if rowAffected == 0 {
+		log.Errorf("update task rowAffected:0 rows")
+		return fmt.Errorf("update task rowAffected:0 rows")
 	}
 
-	return 0
+	return nil
 }
-func DelTask(req vojo.TaskDelByIdReq) int {
+func DelTask(req vojo.TaskDelByIdReq) error {
 	sqlStr := "delete from tasks  where id=?"
-	_, err := CronDb.Exec(sqlStr, req.Id)
+	result, err := CronDb.Exec(sqlStr, req.Id)
 	if err != nil {
 		log.Error("del task error:%v", err.Error())
-		return -1
+		return err
+	}
+	row, err := result.RowsAffected()
+	if err != nil {
+		log.Error("del task error:%v", err.Error())
+		return err
+	} else if row == 0 {
+		return fmt.Errorf("DelTask task error ,the RowsAffected is 0")
 	}
 
-	return 0
+	return nil
 }
 func UpdateTaskStatusByTaskId(taskId int, status int) error {
 	sqlStr := "update tasks set  task_status=? where id=?"

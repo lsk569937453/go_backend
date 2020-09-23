@@ -20,10 +20,10 @@ func GrpcGetServiceList(c *gin.Context) {
 		tt, err := service.GrpcGetServiceList(req.Url)
 
 		var res vojo.BaseRes
-		res.Rescode = 0
+		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
 
 		if err != nil {
-			res.Rescode = -1
+			res.Rescode = vojo.ERROR_RESPONSE_STATUS
 			res.Message = err.Error()
 		} else {
 			data, _ := json.Marshal(tt)
@@ -50,8 +50,9 @@ func GrpcRemoteInvoke(c *gin.Context) {
 
 		tt, err := service.GrpcRemoteInvoke(req.Url, req.ServiceName, req.MethodName, req.ReqJson)
 		var res vojo.BaseRes
-		res.Rescode = 0
+		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
 		if err != nil {
+			res.Rescode = vojo.ERROR_RESPONSE_STATUS
 			res.Message = err.Error()
 		} else {
 			data, _ := json.Marshal(tt)

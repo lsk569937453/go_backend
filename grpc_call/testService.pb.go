@@ -8,7 +8,6 @@ package grpc_call
 
 import (
 	context "context"
-	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -27,7 +26,6 @@ const (
 
 // This is a compile-time assertion that a sufficiently up-to-date version
 // of the legacy proto package is being used.
-const _ = proto.ProtoPackageIsVersion4
 
 type StringMessage struct {
 	state         protoimpl.MessageState

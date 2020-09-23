@@ -2,6 +2,7 @@ package dao
 
 import (
 	"encoding/base64"
+	"fmt"
 	"go_backend/log"
 	"go_backend/vojo"
 	"reflect"
@@ -35,13 +36,13 @@ func HistoryInsert(history *vojo.TasksHistory) error {
  * @Description  getAllHistoryById get  all the history id
  * @Date 10:27 上午 2020/9/3
  **/
-func HistoryGetById(req *vojo.GetTaskHistoryByTaskIdReq) []vojo.TasksHistory {
+func HistoryGetById(req *vojo.GetTaskHistoryByTaskIdReq) ([]vojo.TasksHistory, error) {
 	sqlStr := "SELECT id,task_id, exec_time , exec_result,exec_code,_timestamp FROM task_exec_history where task_id=? order by id desc limit 100"
 	var taskHistory []vojo.TasksHistory
 	err := CronDb.Select(&taskHistory, sqlStr, req.TaskId)
 	if err != nil {
 		log.Errorf("query failed, err:%v", err.Error())
-
+		return nil, err
 	}
 	if taskHistory == nil {
 		taskHistory = make([]vojo.TasksHistory, 0)
@@ -56,7 +57,7 @@ func HistoryGetById(req *vojo.GetTaskHistoryByTaskIdReq) []vojo.TasksHistory {
 		}
 
 	}
-	return taskHistory
+	return taskHistory, nil
 }
 
 /**
@@ -64,7 +65,7 @@ func HistoryGetById(req *vojo.GetTaskHistoryByTaskIdReq) []vojo.TasksHistory {
  * @Description  getHistoryDataByPage
  * @Date 1:53 下午 2020/9/3
  **/
-func HistotyGetByPage(req *vojo.GetHistoryByPage) []vojo.TasksHistory {
+func HistotyGetByPage(req *vojo.GetHistoryByPage) ([]vojo.TasksHistory, error) {
 	var taskHistory []vojo.TasksHistory
 	var err error
 	defaultSql := "SELECT id,task_id, exec_time , exec_result,exec_code,_timestamp FROM task_exec_history where task_id=? order by id desc limit 20"
@@ -77,9 +78,11 @@ func HistotyGetByPage(req *vojo.GetHistoryByPage) []vojo.TasksHistory {
 	}
 	if err != nil {
 		log.Error("history get by page error:%s", err.Error())
+		return nil, err
 	}
 	if taskHistory == nil {
 		taskHistory = make([]vojo.TasksHistory, 0)
+		return taskHistory, fmt.Errorf("HistotyGetByPage find nothing")
 	} else {
 		for i, item := range taskHistory {
 			decodeBytes, err := base64.StdEncoding.DecodeString(item.Exec_result)
@@ -91,7 +94,7 @@ func HistotyGetByPage(req *vojo.GetHistoryByPage) []vojo.TasksHistory {
 		}
 
 	}
-	return taskHistory
+	return taskHistory, nil
 
 }
 

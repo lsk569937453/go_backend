@@ -19,7 +19,11 @@ func ValidateCronExpression(f1 validator.FieldLevel) bool { //验证字段的方
 	if f1.Field().String() == "" {
 		return false
 	}
-	s, err := cron.ParseStandard(f1.Field().String())
+	parser := cron.NewParser(
+		cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor,
+	)
+
+	s, err := parser.Parse(f1.Field().String())
 	if err != nil {
 		return false
 	}

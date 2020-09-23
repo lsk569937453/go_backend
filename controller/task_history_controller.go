@@ -15,13 +15,19 @@ func TaskHistoryGetByTaskId(c *gin.Context) {
 	error := c.BindJSON(&req)
 	if error == nil {
 
-		tt := dao.HistoryGetById(&req)
+		tt, err := dao.HistoryGetById(&req)
 
 		var res vojo.BaseRes
-		res.Rescode = 0
-		data, _ := json.Marshal(tt)
-		log.Info("%s", string(data))
-		res.Message = tt
+		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
+		if err != nil {
+			res.Rescode = vojo.ERROR_RESPONSE_STATUS
+			res.Message = err.Error()
+		} else {
+			data, _ := json.Marshal(tt)
+			log.Info("%s", string(data))
+			res.Message = tt
+		}
+
 		// fmt.Println(res) // 正常输出msg内容
 		c.JSON(http.StatusOK, res)
 
@@ -41,13 +47,18 @@ func TaskHistoryGetByPage(c *gin.Context) {
 	error := c.BindJSON(&req)
 	if error == nil {
 
-		tt := dao.HistotyGetByPage(&req)
-
+		tt, err := dao.HistotyGetByPage(&req)
 		var res vojo.BaseRes
-		res.Rescode = 0
-		data, _ := json.Marshal(tt)
-		log.Info("%s", string(data))
-		res.Message = tt
+		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
+		if err != nil {
+			res.Rescode = vojo.ERROR_RESPONSE_STATUS
+			res.Message = err.Error()
+		} else {
+			data, _ := json.Marshal(tt)
+			log.Info("%s", string(data))
+			res.Message = tt
+		}
+
 		// fmt.Println(res) // 正常输出msg内容
 		c.JSON(http.StatusOK, res)
 
