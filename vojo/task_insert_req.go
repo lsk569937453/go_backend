@@ -33,7 +33,8 @@ func ValidateCronExpression(f1 validator.FieldLevel) bool { //验证字段的方
 
 }
 func ValidateUrl(f1 validator.FieldLevel) bool { //验证字段的方法的定义
-	_, resp, err := fasthttp.Get(nil, f1.Field().String())
+	url := f1.Field().String()
+	_, resp, err := fasthttp.Get(nil, url)
 	var responseBody string
 	if err != nil {
 		responseBody = err.Error()
