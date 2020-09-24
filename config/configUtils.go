@@ -19,12 +19,12 @@ func init() {
 	}
 	config = configNew
 }
-func GetValue(section string, key string) string {
+func GetValue(section string, key string) (string, error) {
 	value, err := config.GetValue(section, key)
 	if err != nil {
 		log.Error("GetValue error:%s", err.Error())
-		return ""
+		return "", err
 	} else {
-		return value
+		return value, nil
 	}
 }

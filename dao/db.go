@@ -38,10 +38,15 @@ func InitDb() *sqlx.DB {
 	return Db
 }
 func initConfig() {
-	userName = config.GetValue("mysql", "username")
-	password = config.GetValue("mysql", "password")
-	ipAddrees = config.GetValue("mysql", "ipAddrees")
-	portString := config.GetValue("mysql", "port")
+	userNameRes, err := config.GetValue("mysql", "username")
+	userName = userNameRes
+	passwordRes, err := config.GetValue("mysql", "password")
+	password = passwordRes
+	ipAddreesRes, err := config.GetValue("mysql", "ipAddrees")
+	ipAddrees = ipAddreesRes
+
+	portString, err := config.GetValue("mysql", "port")
+
 	portNew, err := strconv.Atoi(portString)
 	if err != nil {
 		log.Error("atoi error:%s", err.Error())

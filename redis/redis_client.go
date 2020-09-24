@@ -16,7 +16,10 @@ var redisClient *redis.Client
  * @Date 2:36 下午 2020/8/24
  **/
 func init() {
-	addr := config.GetValue("redis", "address")
+	addr, err := config.GetValue("redis", "address")
+	if err != nil {
+		panic(err)
+	}
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: "", // no password set
