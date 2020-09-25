@@ -5,6 +5,7 @@ import (
 	//"github.com/fullstorydev/grpcurl"
 	"github.com/gin-gonic/gin"
 	"go_backend/controller"
+	_ "go_backend/dao"
 	"go_backend/log"
 	"go_backend/midware"
 	_ "go_backend/task"

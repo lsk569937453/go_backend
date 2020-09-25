@@ -23,3 +23,10 @@ type TasksDao struct {
 	TaskStatus int    `db:"task_status" json:"task_status"`
 	Timestamp  string `db:"_timestamp" json:"timestamp"`
 }
+type TaskDaoListSlice []*TasksDao
+
+func (s TaskDaoListSlice) Len() int      { return len(s) }
+func (s TaskDaoListSlice) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s TaskDaoListSlice) Less(i, j int) bool {
+	return s[i].Timestamp < s[j].Timestamp
+}

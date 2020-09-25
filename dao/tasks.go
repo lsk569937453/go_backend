@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go_backend/log"
 	"go_backend/vojo"
+	"sort"
 
 	"reflect"
 )
@@ -47,14 +48,15 @@ func AddTask(req *vojo.TaskInsertReq) int64 {
  * @Param
  * @return
  **/
-func GetTaskByUserId(req *vojo.GetTaskByUserIdReq) ([]vojo.TasksDao, error) {
+func GetTaskByUserId(req *vojo.GetTaskByUserIdReq) (vojo.TaskDaoListSlice, error) {
 	sqlStr := "SELECT id,task_name, task_cron, url,user_id,_timestamp,req_type,task_status FROM tasks where user_id=?"
-	var users []vojo.TasksDao
+	var users vojo.TaskDaoListSlice
 	err := CronDb.Select(&users, sqlStr, req.UserId)
 	if err != nil {
 		log.Errorf("query failed, err:%v", err.Error())
 		return nil, err
 	}
+	sort.Stable(users)
 	return users, nil
 }
 func GetTaskById(req *vojo.GetTaskByIdReq) ([]vojo.TasksDao, error) {

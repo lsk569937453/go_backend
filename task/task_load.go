@@ -21,8 +21,11 @@ var cronJob *cron.Cron
  * @Date 2:36 下午 2020/8/24
  **/
 func init() {
+	go func() {
 
-	startTask()
+		startTask()
+
+	}()
 
 }
 func startTask() {
