@@ -1,4 +1,4 @@
-package controller
+package task_controller_package
 
 import (
 	"encoding/json"
@@ -11,16 +11,14 @@ import (
 
 func GrpcGetServiceList(c *gin.Context) {
 	var req vojo.GrpcGetServiceListReq
-	// message := c.BindJSON("message")
-	// nick := c.PostForm("nick")
-	error := c.BindJSON(&req)
-	if error == nil {
-		//log.Info(form.Name, form.CronExpression)
+
+	err := c.BindJSON(&req)
+	var res vojo.BaseRes
+	res.Rescode = vojo.NORMAL_RESPONSE_STATUS
+
+	if err == nil {
 
 		tt, err := service.GrpcGetServiceList(req.Url)
-
-		var res vojo.BaseRes
-		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
 
 		if err != nil {
 			res.Rescode = vojo.ERROR_RESPONSE_STATUS
@@ -31,26 +29,27 @@ func GrpcGetServiceList(c *gin.Context) {
 			res.Message = tt
 		}
 
-		// fmt.Println(res) // 正常输出msg内容
-		c.JSON(http.StatusOK, res)
-
 	} else {
-		log.Error("bind error:%v", error.Error())
+		log.Error("bind error:%v", err.Error())
+		res.Rescode = vojo.ERROR_RESPONSE_STATUS
+		res.Message = err.Error()
+
 	}
+	c.JSON(http.StatusOK, res)
 
 }
 
 func GrpcRemoteInvoke(c *gin.Context) {
 	var req vojo.GrpcInvokeReq
-	// message := c.BindJSON("message")
-	// nick := c.PostForm("nick")
-	error := c.BindJSON(&req)
-	if error == nil {
-		//log.Info(form.Name, form.CronExpression)
+
+	err := c.BindJSON(&req)
+
+	var res vojo.BaseRes
+	res.Rescode = vojo.NORMAL_RESPONSE_STATUS
+	if err == nil {
 
 		tt, err := service.GrpcRemoteInvoke(req.Url, req.ServiceName, req.MethodName, req.ReqJson)
-		var res vojo.BaseRes
-		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
+
 		if err != nil {
 			res.Rescode = vojo.ERROR_RESPONSE_STATUS
 			res.Message = err.Error()
@@ -60,11 +59,11 @@ func GrpcRemoteInvoke(c *gin.Context) {
 			res.Message = tt
 		}
 
-		// fmt.Println(res) // 正常输出msg内容
-		c.JSON(http.StatusOK, res)
-
 	} else {
-		log.Error("bind error:%v", error.Error())
+		log.Error("bind error:%v", err.Error())
+		res.Rescode = vojo.ERROR_RESPONSE_STATUS
+		res.Message = err.Error()
 	}
+	c.JSON(http.StatusOK, res)
 
 }

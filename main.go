@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"go_backend/controller/file_share"
+	"go_backend/controller/task_controller_package"
+
 	//"github.com/fullstorydev/grpcurl"
 	"github.com/gin-gonic/gin"
-	"go_backend/controller"
 	"go_backend/log"
 	"go_backend/midware"
 	_ "go_backend/task"
@@ -31,18 +33,6 @@ func initController() {
 			param.ErrorMessage,
 			param.Request.UserAgent(),
 		)
-		//// your custom format
-		//return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
-		//	param.ClientIP,
-		//	param.TimeStamp.Format(time.RFC3339),
-		//	param.Method,
-		//	param.Path,
-		//	param.Request.Proto,
-		//	param.StatusCode,
-		//	param.Latency,
-		//	param.Request.UserAgent(),
-		//	param.ErrorMessage,
-		//)
 	}))
 	r.LoadHTMLGlob("./resource/dist/*/*.html")               // 添加入口index.html
 	r.LoadHTMLFiles("./resource/dist/static/*/*")            // 添加资源路径
@@ -54,17 +44,21 @@ func initController() {
 	r.Use(midware.IpAuthorize())
 
 	//r.Use(gin.LoggerWithWriter(log.BaseGinLog()))
-	r.POST("/api/task/add", controller.TaskAdd)
-	r.GET("/api/task/getAll", controller.TaskGet)
-	r.POST("/api/task/getByUserId", controller.TaskGetByUserId)
-	r.POST("/api/task/getById", controller.TaskGetById)
-	r.POST("/api/task/updateById", controller.TaskUpdate)
-	r.POST("/api/task/delById", controller.TaskDelete)
-	r.POST("/api/taskHistory/getByTaskId", controller.TaskHistoryGetByTaskId)
-	r.POST("/api/taskHistory/getByPage", controller.TaskHistoryGetByPage)
-	r.POST("/api/grpc/getServiceList", controller.GrpcGetServiceList)
-	r.POST("/api/grpc/remoteInvoke", controller.GrpcRemoteInvoke)
-	r.GET("/api/db/dbPing", controller.DbPing)
+	r.POST("/api/task/add", task_controller_package.TaskAdd)
+	r.GET("/api/task/getAll", task_controller_package.TaskGet)
+	r.POST("/api/task/getByUserId", task_controller_package.TaskGetByUserId)
+	r.POST("/api/task/getById", task_controller_package.TaskGetById)
+	r.POST("/api/task/updateById", task_controller_package.TaskUpdate)
+	r.POST("/api/task/delById", task_controller_package.TaskDelete)
+	r.POST("/api/taskHistory/getByTaskId", task_controller_package.TaskHistoryGetByTaskId)
+	r.POST("/api/taskHistory/getByPage", task_controller_package.TaskHistoryGetByPage)
+	r.POST("/api/grpc/getServiceList", task_controller_package.GrpcGetServiceList)
+	r.POST("/api/grpc/remoteInvoke", task_controller_package.GrpcRemoteInvoke)
+	r.GET("/api/db/dbPing", task_controller_package.DbPing)
+
+	r.POST("/api/shareFile/uploadFile", file_share.UploadFile)
+	r.POST("/api/shareFile/download-user-file", file_share.DownloadFile)
+
 	fmt.Println("the server has started in the 9393")
 	r.Run(":9393") // listen and serve
 	//	r.RunTLS(":9393", "resource/client.pem", "resource/client.key")
