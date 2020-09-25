@@ -1,4 +1,4 @@
-package controller
+package task_controller_package
 
 import (
 	"encoding/json"
@@ -12,11 +12,11 @@ import (
 
 func TaskHistoryGetByTaskId(c *gin.Context) {
 	var req vojo.GetTaskHistoryByTaskIdReq
-	error := c.BindJSON(&req)
-	if error == nil {
-
+	err := c.BindJSON(&req)
+	var res vojo.BaseRes
+	res.Rescode = vojo.NORMAL_RESPONSE_STATUS
+	if err == nil {
 		tt, err := dao.HistoryGetById(&req)
-
 		var res vojo.BaseRes
 		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
 		if err != nil {
@@ -27,13 +27,12 @@ func TaskHistoryGetByTaskId(c *gin.Context) {
 			log.Info("%s", string(data))
 			res.Message = tt
 		}
-
-		// fmt.Println(res) // 正常输出msg内容
-		c.JSON(http.StatusOK, res)
-
 	} else {
-		log.Error("bind error:%v", error.Error())
+		res.Message = err.Error()
+		res.Rescode = vojo.ERROR_RESPONSE_STATUS
+		log.Error("bind error:%v", err.Error())
 	}
+	c.JSON(http.StatusOK, res)
 
 }
 
@@ -44,11 +43,10 @@ func TaskHistoryGetByTaskId(c *gin.Context) {
  **/
 func TaskHistoryGetByPage(c *gin.Context) {
 	var req vojo.GetHistoryByPage
-	error := c.BindJSON(&req)
-	if error == nil {
-
+	err := c.BindJSON(&req)
+	var res vojo.BaseRes
+	if err == nil {
 		tt, err := dao.HistotyGetByPage(&req)
-		var res vojo.BaseRes
 		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
 		if err != nil {
 			res.Rescode = vojo.ERROR_RESPONSE_STATUS
@@ -58,12 +56,11 @@ func TaskHistoryGetByPage(c *gin.Context) {
 			log.Info("%s", string(data))
 			res.Message = tt
 		}
-
-		// fmt.Println(res) // 正常输出msg内容
-		c.JSON(http.StatusOK, res)
-
 	} else {
-		log.Error("bind error:%v", error.Error())
+		res.Message = err.Error()
+		res.Rescode = vojo.ERROR_RESPONSE_STATUS
+		log.Error("bind error:%v", err.Error())
 	}
+	c.JSON(http.StatusOK, res)
 
 }

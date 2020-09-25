@@ -83,8 +83,8 @@ func AddTask(cron string, url string, taskId int) {
  **/
 func DeleteTask(taskId int) {
 	stringID := strconv.Itoa(taskId)
-	localTaskId := redis.Get(stringID)
-	if localTaskId == "" {
+	localTaskId, err := redis.Get(stringID)
+	if err != nil {
 		log.Info("can not find taskID in redis")
 		return
 	}

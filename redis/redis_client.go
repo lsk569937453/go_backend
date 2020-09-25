@@ -10,6 +10,8 @@ import (
 
 var redisClient *redis.Client
 
+const DefaultTimeOut = 100 * time.Millisecond
+
 /**
  *
  * @Description  init the redis client
@@ -28,21 +30,49 @@ func init() {
 	redisClient = rdb
 }
 func Set(key string, value string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Microsecond)
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)
 	defer cancel()
 	err := redisClient.Set(ctx, key, value, 0).Err()
 	return err
 
 }
-func Get(key string) string {
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Microsecond)
+func SetNX(key string, value interface{}, ti time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)
+	defer cancel()
+	err := redisClient.SetNX(ctx, key, value, ti).Err()
+	return err
+
+}
+func Get(key string) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)
 	defer cancel()
 	result, err := redisClient.Get(ctx, key).Result()
 	if err != nil {
 		log.Errorf("Get error:%s", err.Error())
-		return ""
+		return "", err
 	} else {
-		return result
+		return result, nil
 	}
-
+}
+func TTL(key string) (time.Duration, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)
+	defer cancel()
+	result, err := redisClient.TTL(ctx, key).Result()
+	if err != nil {
+		log.Errorf("Get error:%s", err.Error())
+		return 0, err
+	} else {
+		return result, err
+	}
+}
+func Exists(key string) (int64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)
+	defer cancel()
+	result, err := redisClient.Exists(ctx, key).Result()
+	if err != nil {
+		log.Errorf("Get error:%s", err.Error())
+		return 0, err
+	} else {
+		return result, err
+	}
 }
