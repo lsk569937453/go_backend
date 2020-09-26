@@ -19,6 +19,7 @@ require (
 	github.com/golang/protobuf v1.4.2
 	github.com/jhump/protoreflect v1.7.0
 	github.com/jmoiron/sqlx v1.2.0
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/satori/go.uuid v1.2.0

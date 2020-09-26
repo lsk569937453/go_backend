@@ -24,6 +24,7 @@ func init() {
 
 }
 func useHomeDir() {
+
 	user, err := user.Current()
 	if nil != err {
 		panic(err)

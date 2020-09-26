@@ -11,7 +11,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
-	"path"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -31,7 +30,7 @@ const (
  **/
 func SaveFile(c *gin.Context, fStream *multipart.FileHeader) (string, error) {
 	newFileName := util.GetCurrentTime() + DefaultKeyCombineChar + fStream.Filename
-	dst := path.Join(FileSaveDir, newFileName)
+	dst := filepath.Join(FileSaveDir, newFileName)
 	err := c.SaveUploadedFile(fStream, dst)
 
 	var realKey string
