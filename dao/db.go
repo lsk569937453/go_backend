@@ -2,13 +2,15 @@ package dao
 
 import (
 	"fmt"
-	"go_backend/config"
-	"go_backend/log"
-	"strconv"
-	"time"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"go_backend/config"
+	"go_backend/dao/table"
+	"go_backend/log"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"strconv"
+	"time"
 )
 
 var (
@@ -27,6 +29,7 @@ func init() {
 }
 func InitDb() *sqlx.DB {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&timeout=1s&readTimeout=1s", userName, password, ipAddrees, port, dbName, charset)
+
 	Db, err := sqlx.Open("mysql", dsn)
 	if err != nil {
 		fmt.Printf("mysql connect failed, detail is [%v]", err.Error())
@@ -35,6 +38,16 @@ func InitDb() *sqlx.DB {
 
 	Db.SetMaxIdleConns(20)
 	Db.SetMaxOpenConns(50)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&table.Tasks{})
+	err = db.AutoMigrate(&table.TaskExecHistory{})
+	if err != nil {
+		panic(err)
+	}
+
 	return Db
 }
 func initConfig() {
