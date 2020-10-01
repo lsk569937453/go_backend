@@ -28,6 +28,12 @@ func init() {
 		DB:       0,  // use default DB
 	})
 	redisClient = rdb
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)
+	defer cancel()
+	_, err = redisClient.Ping(ctx).Result()
+	if err != nil {
+		panic(err)
+	}
 }
 func Set(key string, value string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)

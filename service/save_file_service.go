@@ -8,9 +8,11 @@ import (
 	"go_backend/redis"
 	"go_backend/util"
 	"go_backend/vojo"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -84,10 +86,18 @@ func DownloadService(ctx *gin.Context) error {
 	ctx.Header("Content-Transfer-Encoding", "binary")
 	ctx.Header("share-file-name", fileName)
 	ctx.Header("Content-Type", "application/octet-stream")
-	ctx.File(targetPath)
+	file, err := os.Open(targetPath)
+	if err != nil {
+		log.Error("open error:", err)
+		return err
+	}
+	defer file.Close()
+
+	io.Copy(ctx.Writer, file)
 	ctx.Status(http.StatusOK)
 
 	log.Info("%s has down load over ", realName)
+
 	return nil
 }
 
