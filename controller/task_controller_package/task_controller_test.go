@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"go_backend/util"
 	"go_backend/vojo"
 	"math/rand"
 	"testing"
@@ -14,7 +15,7 @@ func TestTaskGet(t *testing.T) {
 	router := gin.New()
 	const path = "/api/task/getAll"
 	router.GET(path, TaskGet)
-	byteArr, resStatusCode, err := Get(path, router)
+	byteArr, resStatusCode, err := util.Get(path, router)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 200, resStatusCode)
 	var res vojo.BaseRes
@@ -27,7 +28,7 @@ func TestTaskGetByUserIdSuccess(t *testing.T) {
 	const path = "/api/task/getByUserId"
 	router.POST(path, TaskGet)
 	reqBody := "{\"user_id\":\"-1\"}"
-	byteArr, resStatusCode, err := Post(path, router, reqBody)
+	byteArr, resStatusCode, err := util.Post(path, router, reqBody)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 200, resStatusCode)
 	var res vojo.BaseRes
@@ -40,7 +41,7 @@ func TestTaskGetByIdSuccess(t *testing.T) {
 	const path = "/api/task/getById"
 	router.POST(path, TaskGetById)
 	reqBody := "{\"id\":30}"
-	byteArr, resStatusCode, err := Post(path, router, reqBody)
+	byteArr, resStatusCode, err := util.Post(path, router, reqBody)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 200, resStatusCode)
 	var res vojo.BaseRes
@@ -53,7 +54,7 @@ func TestTaskAddSuccess(t *testing.T) {
 	const path = "/api/task/add"
 	router.POST(path, TaskAdd)
 	reqBody := "{\"name\":\"1\",\"cron_expression\":\"*/5 * * * * ?\",\"url\":\"http://45.32.63.93:9001/api/test/getTest\"}"
-	byteArr, resStatusCode, err := Post(path, router, reqBody)
+	byteArr, resStatusCode, err := util.Post(path, router, reqBody)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 200, resStatusCode)
 	var res vojo.BaseRes
@@ -66,7 +67,7 @@ func TestTaskAddFail(t *testing.T) {
 	const path = "/api/task/add"
 	router.POST(path, TaskAdd)
 	reqBody := "{\"name\":\"1\",\"cron_expression\":\"*/5 * * * * ?\",\"url\":\"http://45.32.63.93:9394/api/search\"}"
-	byteArr, resStatusCode, err := Post(path, router, reqBody)
+	byteArr, resStatusCode, err := util.Post(path, router, reqBody)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 200, resStatusCode)
 	var res vojo.BaseRes
@@ -83,7 +84,7 @@ func TestTaskUpdateSuccess(t *testing.T) {
 
 	reqBody := "{\"id\":30,\"cron_expression\":\"lsk%d\",\"url\":\"test\"}"
 	reqBody = fmt.Sprintf(reqBody, number)
-	byteArr, resStatusCode, err := Post(path, router, reqBody)
+	byteArr, resStatusCode, err := util.Post(path, router, reqBody)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 200, resStatusCode)
 	var res vojo.BaseRes
@@ -96,7 +97,7 @@ func TestTaskUpdateFail(t *testing.T) {
 	const path = "/api/task/updateById"
 	router.POST(path, TaskUpdate)
 	reqBody := "{\"cron_expression\":\"lsk\",\"url\":\"aaatest\"}"
-	byteArr, resStatusCode, err := Post(path, router, reqBody)
+	byteArr, resStatusCode, err := util.Post(path, router, reqBody)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 200, resStatusCode)
 	var res vojo.BaseRes
@@ -109,7 +110,7 @@ func TestTaskDeleteFail(t *testing.T) {
 	const path = "/api/task/delById"
 	router.POST(path, TaskDelete)
 	reqBody := "{\"id\":100}"
-	byteArr, resStatusCode, err := Post(path, router, reqBody)
+	byteArr, resStatusCode, err := util.Post(path, router, reqBody)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 200, resStatusCode)
 	var res vojo.BaseRes

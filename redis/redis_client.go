@@ -47,7 +47,31 @@ func SetNX(key string, value interface{}, ti time.Duration) error {
 	defer cancel()
 	err := redisClient.SetNX(ctx, key, value, ti).Err()
 	return err
+}
+func Expire(key string, ti time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)
+	defer cancel()
+	err := redisClient.Expire(ctx, key, ti).Err()
+	return err
+}
+func HSet(key string, value ...interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)
+	defer cancel()
+	err := redisClient.HSet(ctx, key, value).Err()
+	return err
+}
+func HGet(key string, fieldStr string) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)
+	defer cancel()
+	val, err := redisClient.HGet(ctx, key, fieldStr).Result()
+	return val, err
+}
 
+func HGetAll(key string) (map[string]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)
+	defer cancel()
+	val, err := redisClient.HGetAll(ctx, key).Result()
+	return val, err
 }
 func Get(key string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeOut)

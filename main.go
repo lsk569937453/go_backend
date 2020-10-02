@@ -58,6 +58,8 @@ func initController() {
 
 	r.POST("/api/shareFile/uploadFile", file_share.UploadFile)
 	r.POST("/api/shareFile/download-user-file", file_share.DownloadFile)
+	r.GET("/api/shareFile/getClientID", file_share.GetClientID)
+	r.GET("/api/shareFile/getFileList", file_share.GetFileList)
 
 	fmt.Println("the server has started in the 9393")
 	r.Run(":9393") // listen and serve
