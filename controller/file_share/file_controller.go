@@ -11,7 +11,37 @@ import (
 	"strings"
 )
 
-func UploadFile(c *gin.Context) {
+func UploadChunk(c *gin.Context) {
+	var res vojo.BaseRes
+	key, err := service.SaveChunk(c)
+
+	if err != nil {
+		res.Message = fmt.Sprintf("UploadFile error:%s", err.Error())
+		res.Rescode = vojo.ERROR_RESPONSE_STATUS
+		log.Error("bind error:%v", err.Error())
+
+	} else {
+		res.Message = key
+	}
+
+	c.JSON(http.StatusOK, res)
+}
+func MergeChunk(c *gin.Context) {
+	var res vojo.BaseRes
+	err := service.MergeChunk(c)
+
+	if err != nil {
+		res.Message = fmt.Sprintf("UploadFile error:%s", err.Error())
+		res.Rescode = vojo.ERROR_RESPONSE_STATUS
+		log.Error("bind error:%v", err.Error())
+
+	} else {
+		res.Message = ""
+	}
+
+	c.JSON(http.StatusOK, res)
+}
+func MergeChunk2(c *gin.Context) {
 	var res vojo.BaseRes
 	res.Rescode = vojo.NORMAL_RESPONSE_STATUS
 	form, err := c.MultipartForm()
@@ -33,9 +63,10 @@ func UploadFile(c *gin.Context) {
 
 	files := form.File["file"]
 	if files == nil || len(files) == 0 {
-		res.Message = fmt.Sprintf("file error:%s", err.Error())
+		errorMessage := "file error,file is null"
+		res.Message = errorMessage
 		res.Rescode = vojo.ERROR_RESPONSE_STATUS
-		log.Error("bind error:%v", err.Error())
+		log.Error("bind error:%v", errorMessage)
 		c.JSON(http.StatusOK, res)
 		return
 	}

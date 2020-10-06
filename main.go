@@ -56,7 +56,8 @@ func initController() {
 	r.POST("/api/grpc/remoteInvoke", task_controller_package.GrpcRemoteInvoke)
 	r.GET("/api/db/dbPing", task_controller_package.DbPing)
 
-	r.POST("/api/shareFile/uploadFile", file_share.UploadFile)
+	r.POST("/api/shareFile/uploadChunk", file_share.UploadChunk)
+	r.POST("/api/shareFile/mergeChunk", file_share.MergeChunk)
 	r.POST("/api/shareFile/download-user-file", file_share.DownloadFile)
 	r.GET("/api/shareFile/getClientID", file_share.GetClientID)
 	r.GET("/api/shareFile/getFileList", file_share.GetFileList)

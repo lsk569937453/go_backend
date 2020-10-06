@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -9,12 +10,15 @@ import (
 	"go_backend/util"
 	"go_backend/vojo"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -24,6 +28,117 @@ const (
 	DefaultCountKeyPrefix = "count"
 	DefaultKeyCombineChar = "=="
 )
+
+func SaveChunk(c *gin.Context) (string, error) {
+	form, err := c.MultipartForm()
+	if err != nil {
+		return "", err
+	}
+	clientId := form.Value["clientId"]
+	if clientId == nil || len(clientId) == 0 || clientId[0] == "" {
+		return "", fmt.Errorf("form value error,clientId is null")
+	}
+	chunkIndex := form.Value["index"]
+	if chunkIndex == nil || len(chunkIndex) == 0 || chunkIndex[0] == "" {
+		return "", fmt.Errorf("form value error,index is null")
+	}
+	files := form.File["file"]
+	if files == nil || len(files) == 0 {
+		return "", fmt.Errorf("form value error,file is null")
+	}
+	fileName := form.Value["fileName"]
+	if fileName == nil || len(fileName) == 0 {
+		return "", fmt.Errorf("form value error,fileName is null")
+	}
+
+	isCreate, dst := util.CreateFile(FileSaveDir, clientId[0])
+	if !isCreate {
+		err := fmt.Errorf("CreateFile error")
+		log.Error("SaveFile error ", err)
+		return "", err
+	}
+
+	realFileName := chunkIndex[0] + fileName[0]
+	dst = filepath.Join(dst, realFileName)
+
+	err = c.SaveUploadedFile(files[0], dst)
+
+	return clientId[0], err
+}
+
+type FileListSort []os.FileInfo
+
+func (s FileListSort) Len() int      { return len(s) }
+func (s FileListSort) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s FileListSort) Less(i, j int) bool {
+	return s[i].Name() < s[j].Name()
+}
+
+//merge the file chunk
+
+func MergeChunk(c *gin.Context) error {
+	form, err := c.MultipartForm()
+	if err != nil {
+		return err
+	}
+	clientId := form.Value["clientId"]
+	if clientId == nil || len(clientId) == 0 || clientId[0] == "" {
+		return fmt.Errorf("form value error,clientId is null")
+	}
+
+	fileName := form.Value["fileName"]
+	if fileName == nil || len(fileName) == 0 {
+		return fmt.Errorf("form value error,fileName is null")
+	}
+	isCreate, dst := util.CreateFile(FileSaveDir, clientId[0])
+	if !isCreate {
+		return fmt.Errorf("createFile error")
+	}
+	//get allFiles in the dir
+	dirFileList, err := ioutil.ReadDir(dst)
+	if err != nil {
+		return err
+	}
+	//filter the chunkFile
+	realChunkFileList := make(FileListSort, 0)
+	for _, value := range dirFileList {
+		everyFileName := value.Name()
+		if strings.Contains(everyFileName, fileName[0]) {
+			realChunkFileList = append(realChunkFileList, value)
+		}
+
+	}
+	sort.Stable(realChunkFileList)
+	if len(realChunkFileList) == 0 {
+		return fmt.Errorf("file chunk count is 0")
+	}
+	realFileName := filepath.Join(dst, fileName[0])
+
+	out, err := os.OpenFile(realFileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	wt := bufio.NewWriter(out)
+
+	for _, item := range realChunkFileList {
+		chunkPath := filepath.Join(dst, item.Name())
+		chunkFile, err := os.Open(chunkPath)
+		defer chunkFile.Close()
+		if err != nil {
+			return err
+		}
+
+		_, err = io.Copy(wt, chunkFile)
+		if err != nil {
+			return err
+		}
+	}
+	wt.Flush()
+
+	return nil
+
+}
 
 /**
  *
