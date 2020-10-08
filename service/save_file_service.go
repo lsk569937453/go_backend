@@ -178,6 +178,37 @@ func SaveFile(c *gin.Context, fStream *multipart.FileHeader, clientId string) (s
 	}
 	return clientId, nil
 }
+func DownloadChunk(ctx *gin.Context) error {
+	var req vojo.DownloadFileReq
+
+	err := ctx.BindJSON(&req)
+	if err != nil {
+		return err
+	}
+	clientId := req.FileKeyCode
+	frontEndFileName := req.FileName
+
+	targetPath := filepath.Join(FileSaveDir, clientId, frontEndFileName)
+
+	//Seems this headers needed for some browsers (for example without this headers Chrome will download files as txt)
+	ctx.Header("Content-Description", "File Transfer")
+	ctx.Header("Content-Transfer-Encoding", "binary")
+	ctx.Header("share-file-name", frontEndFileName)
+	ctx.Header("Content-Type", "application/octet-stream")
+	file, err := os.Open(targetPath)
+	if err != nil {
+		log.Error("open error:", err)
+		return err
+	}
+	defer file.Close()
+
+	io.Copy(ctx.Writer, file)
+	ctx.Status(http.StatusOK)
+
+	log.Info("%s has down load over ", frontEndFileName)
+
+	return nil
+}
 func DownloadService(ctx *gin.Context) error {
 	var req vojo.DownloadFileReq
 

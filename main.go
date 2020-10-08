@@ -59,6 +59,7 @@ func initController() {
 	r.POST("/api/shareFile/uploadChunk", file_share.UploadChunk)
 	r.POST("/api/shareFile/mergeChunk", file_share.MergeChunk)
 	r.POST("/api/shareFile/download-user-file", file_share.DownloadFile)
+	r.POST("/api/shareFile/downloadChunk", file_share.DownloadChunk)
 	r.GET("/api/shareFile/getClientID", file_share.GetClientID)
 	r.GET("/api/shareFile/getFileList", file_share.GetFileList)
 

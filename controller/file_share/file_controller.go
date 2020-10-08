@@ -101,6 +101,19 @@ func DownloadFile(ctx *gin.Context) {
 	}
 
 }
+func DownloadChunk(ctx *gin.Context) {
+
+	err := service.DownloadChunk(ctx)
+
+	var res vojo.BaseRes
+	if err != nil {
+		res.Message = fmt.Sprintf("DownloadFile error:%s", err.Error())
+		res.Rescode = vojo.ERROR_RESPONSE_STATUS
+		log.Error("bind error:%v", err.Error())
+		ctx.JSON(http.StatusForbidden, res)
+	}
+
+}
 func GetClientID(ctx *gin.Context) {
 	uu := uuid.NewV4()
 	realKey := uu.String()
