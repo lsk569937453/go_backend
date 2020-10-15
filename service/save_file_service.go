@@ -230,7 +230,7 @@ func DownloadService(ctx *gin.Context) error {
 	targetPath := filepath.Join(FileSaveDir, clientId, realName)
 
 	fileLen := len(realName)
-	fileStart := len(util.TimeFormat + DefaultKeyCombineChar)
+	fileStart := len(util.TimeFormatFirst + DefaultKeyCombineChar)
 	fileName := realName[fileStart:fileLen]
 	fileName = url.QueryEscape(fileName)
 
@@ -263,7 +263,7 @@ func GetFileList(clientId string) ([]string, error) {
 	fileList := make([]string, 0)
 	for key, _ := range res {
 		fileLen := len(key)
-		fileStart := len(util.TimeFormat + DefaultKeyCombineChar)
+		fileStart := len(util.TimeFormatFirst + DefaultKeyCombineChar)
 		fileName := key[fileStart:fileLen]
 		fileList = append(fileList, fileName)
 	}
@@ -312,7 +312,7 @@ func isFileExpire(fileKey string, fileName string) (bool, string) {
 		} else {
 			for key, _ := range fileNameWithTimeMap {
 				fileLen := len(key)
-				fileStart := len(util.TimeFormat + DefaultKeyCombineChar)
+				fileStart := len(util.TimeFormatFirst + DefaultKeyCombineChar)
 				itemFileName := key[fileStart:fileLen]
 				if itemFileName == fileName {
 					return true, key

@@ -1,4 +1,4 @@
-package task_controller_package
+package schedule_task
 
 import (
 	"encoding/json"

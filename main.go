@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"go_backend/controller/file_share"
-	"go_backend/controller/task_controller_package"
+	"go_backend/controller/schedule_task"
 
 	//"github.com/fullstorydev/grpcurl"
 	"github.com/gin-gonic/gin"
@@ -44,17 +44,17 @@ func initController() {
 	r.Use(midware.IpAuthorize())
 
 	//r.Use(gin.LoggerWithWriter(log.BaseGinLog()))
-	r.POST("/api/task/add", task_controller_package.TaskAdd)
-	r.GET("/api/task/getAll", task_controller_package.TaskGet)
-	r.POST("/api/task/getByUserId", task_controller_package.TaskGetByUserId)
-	r.POST("/api/task/getById", task_controller_package.TaskGetById)
-	r.POST("/api/task/updateById", task_controller_package.TaskUpdate)
-	r.POST("/api/task/delById", task_controller_package.TaskDelete)
-	r.POST("/api/taskHistory/getByTaskId", task_controller_package.TaskHistoryGetByTaskId)
-	r.POST("/api/taskHistory/getByPage", task_controller_package.TaskHistoryGetByPage)
-	r.POST("/api/grpc/getServiceList", task_controller_package.GrpcGetServiceList)
-	r.POST("/api/grpc/remoteInvoke", task_controller_package.GrpcRemoteInvoke)
-	r.GET("/api/db/dbPing", task_controller_package.DbPing)
+	r.POST("/api/task/add", schedule_task.TaskAdd)
+	r.GET("/api/task/getAll", schedule_task.TaskGet)
+	r.POST("/api/task/getByUserId", schedule_task.TaskGetByUserId)
+	r.POST("/api/task/getById", schedule_task.TaskGetById)
+	r.POST("/api/task/updateById", schedule_task.TaskUpdate)
+	r.POST("/api/task/delById", schedule_task.TaskDelete)
+	r.POST("/api/taskHistory/getByTaskId", schedule_task.TaskHistoryGetByTaskId)
+	r.POST("/api/taskHistory/getByPage", schedule_task.TaskHistoryGetByPage)
+	r.POST("/api/grpc/getServiceList", schedule_task.GrpcGetServiceList)
+	r.POST("/api/grpc/remoteInvoke", schedule_task.GrpcRemoteInvoke)
+	r.GET("/api/db/dbPing", schedule_task.DbPing)
 
 	r.POST("/api/shareFile/uploadChunk", file_share.UploadChunk)
 	r.POST("/api/shareFile/mergeChunk", file_share.MergeChunk)
@@ -62,6 +62,7 @@ func initController() {
 	r.POST("/api/shareFile/downloadChunk", file_share.DownloadChunk)
 	r.GET("/api/shareFile/getClientID", file_share.GetClientID)
 	r.GET("/api/shareFile/getFileList", file_share.GetFileList)
+	r.POST("/api/cron/getCronExecResult", schedule_task.GetCronExecResult)
 
 	fmt.Println("the server has started in the 9393")
 	r.Run(":9393") // listen and serve

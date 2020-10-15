@@ -1,25 +1,24 @@
-package task_controller_package
+package schedule_task
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
+	"go_backend/dao"
 	"go_backend/log"
-	"go_backend/service"
 	"go_backend/vojo"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func GrpcGetServiceList(c *gin.Context) {
-	var req vojo.GrpcGetServiceListReq
-
+func TaskHistoryGetByTaskId(c *gin.Context) {
+	var req vojo.GetTaskHistoryByTaskIdReq
 	err := c.BindJSON(&req)
 	var res vojo.BaseRes
 	res.Rescode = vojo.NORMAL_RESPONSE_STATUS
-
 	if err == nil {
-
-		tt, err := service.GrpcGetServiceList(req.Url)
-
+		tt, err := dao.HistoryGetById(&req)
+		var res vojo.BaseRes
+		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
 		if err != nil {
 			res.Rescode = vojo.ERROR_RESPONSE_STATUS
 			res.Message = err.Error()
@@ -28,28 +27,27 @@ func GrpcGetServiceList(c *gin.Context) {
 			log.Info("%s", string(data))
 			res.Message = tt
 		}
-
 	} else {
-		log.Error("bind error:%v", err.Error())
-		res.Rescode = vojo.ERROR_RESPONSE_STATUS
 		res.Message = err.Error()
-
+		res.Rescode = vojo.ERROR_RESPONSE_STATUS
+		log.Error("bind error:%v", err.Error())
 	}
 	c.JSON(http.StatusOK, res)
 
 }
 
-func GrpcRemoteInvoke(c *gin.Context) {
-	var req vojo.GrpcInvokeReq
-
+/**
+ *
+ * @Description history get by page
+ * @Date 11:28 上午 2020/9/3
+ **/
+func TaskHistoryGetByPage(c *gin.Context) {
+	var req vojo.GetHistoryByPage
 	err := c.BindJSON(&req)
-
 	var res vojo.BaseRes
-	res.Rescode = vojo.NORMAL_RESPONSE_STATUS
 	if err == nil {
-
-		tt, err := service.GrpcRemoteInvoke(req.Url, req.ServiceName, req.MethodName, req.ReqJson)
-
+		tt, err := dao.HistotyGetByPage(&req)
+		res.Rescode = vojo.NORMAL_RESPONSE_STATUS
 		if err != nil {
 			res.Rescode = vojo.ERROR_RESPONSE_STATUS
 			res.Message = err.Error()
@@ -58,11 +56,10 @@ func GrpcRemoteInvoke(c *gin.Context) {
 			log.Info("%s", string(data))
 			res.Message = tt
 		}
-
 	} else {
-		log.Error("bind error:%v", err.Error())
-		res.Rescode = vojo.ERROR_RESPONSE_STATUS
 		res.Message = err.Error()
+		res.Rescode = vojo.ERROR_RESPONSE_STATUS
+		log.Error("bind error:%v", err.Error())
 	}
 	c.JSON(http.StatusOK, res)
 
