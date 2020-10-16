@@ -33,8 +33,8 @@ func GetCronExecResult(c *gin.Context) ([]*vojo.CronResult, error) {
 			var errMessage string
 			if err != nil {
 				errMessage = err.Error()
+				res = make([]string, 0)
 			}
-			fmt.Println(val)
 			cronResult := &vojo.CronResult{
 				Result:         res,
 				CronExpression: val,
@@ -48,6 +48,8 @@ func GetCronExecResult(c *gin.Context) ([]*vojo.CronResult, error) {
 	res := mergeResult(resultChan)
 	return res, nil
 }
+
+//calculate the schedule
 func newSchedule(cronExpression string) ([]string, error) {
 	specParser := cron.NewParser(cron.Second | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)
 	schedule, err := specParser.Parse(cronExpression)
@@ -56,7 +58,7 @@ func newSchedule(cronExpression string) ([]string, error) {
 	} else {
 		resultList := make([]string, 0)
 		tem := time.Now()
-		for i := 0; i < 5; i++ {
+		for i := 0; i < 10; i++ {
 			next := schedule.Next(tem)
 			resultList = append(resultList, util.FormatTime(next))
 			tem = next
