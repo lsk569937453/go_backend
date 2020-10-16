@@ -31,9 +31,9 @@ func (tmp *RequestSu) ProtoMessage() {
 
 type RequestSupplier func(proto.Message) error
 
-func (tmp RequestSupplier) String() string {
-	return tmp.String()
-}
+//func (tmp RequestSupplier) String() string {
+//	return tmp.String()
+//}
 func TestGrpc() {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
@@ -98,7 +98,11 @@ func TestGrpc() {
 
 				} else if methodDescItem.IsServerStreaming() {
 					req := msgFactory.NewMessage(methodDescItem.GetInputType())
-					jsonpb.Unmarshal(bytes.NewReader([]byte(dataStr)), req)
+					err := jsonpb.Unmarshal(bytes.NewReader([]byte(dataStr)), req)
+					if err != nil {
+						log.Error("%s", err.Error())
+						return
+					}
 
 					tr, err := stub.InvokeRpcServerStream(ctx, methodDescItem, req)
 					//	tr, err := stub.InvokeRpcServerStream(ctx, methodDescItem, data)
@@ -116,7 +120,7 @@ func TestGrpc() {
 							break
 						}
 						if err != nil {
-							fmt.Printf("error %v", err)
+							log.Error("%s", err.Error())
 							return
 						}
 						fmt.Println(resp.String())
@@ -124,7 +128,11 @@ func TestGrpc() {
 
 				} else {
 					req := msgFactory.NewMessage(methodDescItem.GetInputType())
-					jsonpb.Unmarshal(bytes.NewReader([]byte(dataStr)), req)
+					err := jsonpb.Unmarshal(bytes.NewReader([]byte(dataStr)), req)
+					if err != nil {
+						log.Error("%s", err.Error())
+						return
+					}
 
 					mes, err := stub.InvokeRpc(ctx, methodDescItem, req)
 					if err != nil {

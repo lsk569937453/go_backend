@@ -110,9 +110,14 @@ func TaskAdd(c *gin.Context) {
 		}
 		tt := dao.AddTask(&form)
 
-		task.AddTask(form.CronExpression, form.Url, int(tt))
+		err = task.AddTask(form.CronExpression, form.Url, int(tt))
+		if err != nil {
+			res.Message = err.Error()
+			res.Rescode = vojo.ERROR_RESPONSE_STATUS
+		} else {
+			res.Message = "添加任务成功"
 
-		res.Message = "添加任务成功"
+		}
 
 	} else {
 		res.Message = err.Error()
@@ -141,7 +146,11 @@ func TaskUpdate(c *gin.Context) {
 			res.Message = "update success"
 
 			task.DeleteTask(form.Id)
-			task.AddTask(form.CronExpression, form.Url, form.Id)
+			err := task.AddTask(form.CronExpression, form.Url, form.Id)
+			if err != nil {
+				res.Message = tt.Error()
+				res.Rescode = vojo.ERROR_RESPONSE_STATUS
+			}
 		} else {
 			res.Message = tt.Error()
 			res.Rescode = vojo.ERROR_RESPONSE_STATUS

@@ -26,7 +26,10 @@ func Get(uri string, router *gin.Engine) ([]byte, int, error) {
 // Get send url
 func Post(uri string, router *gin.Engine, reqBody string) ([]byte, int, error) {
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(strings.NewReader(reqBody))
+	_, err := buf.ReadFrom(strings.NewReader(reqBody))
+	if err != nil {
+		return nil, 0, err
+	}
 	req := httptest.NewRequest("POST", uri, buf)
 	w := httptest.NewRecorder()
 

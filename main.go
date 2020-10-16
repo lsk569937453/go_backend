@@ -14,11 +14,14 @@ import (
 
 func main() {
 
-	initController()
+	err := initController()
+	if err != nil {
+		log.Error("initController error", err.Error())
+	}
 
 }
 
-func initController() {
+func initController() error {
 	gin.DefaultWriter = log.BaseGinLog()
 	r := gin.New()
 	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
@@ -65,7 +68,7 @@ func initController() {
 	r.POST("/api/cron/getCronExecResult", schedule_task.GetCronExecResult)
 
 	fmt.Println("the server has started in the 9393")
-	r.Run(":9393") // listen and serve
+	return r.Run(":9393") // listen and serve
 	//	r.RunTLS(":9393", "resource/client.pem", "resource/client.key")
 
 }

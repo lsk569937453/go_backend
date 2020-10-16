@@ -17,7 +17,7 @@ func init() {
 func createLogDir() string {
 	user, err := user.Current()
 	if nil != err {
-		fmt.Printf("", err)
+		fmt.Println("", err.Error())
 		return "/home/work/ddalog/"
 	}
 	fmt.Println("log dir:" + user.HomeDir)

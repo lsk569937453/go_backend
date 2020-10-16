@@ -53,7 +53,7 @@ func MergeChunk2(c *gin.Context) {
 		return
 	}
 	clientId := form.Value["clientId"]
-	if clientId == nil || len(clientId) == 0 || clientId[0] == "" {
+	if len(clientId) == 0 || clientId[0] == "" {
 		res.Message = fmt.Sprintf("clientId error:%s", err.Error())
 		res.Rescode = vojo.ERROR_RESPONSE_STATUS
 		log.Error("bind error:%v", err.Error())
@@ -62,7 +62,7 @@ func MergeChunk2(c *gin.Context) {
 	}
 
 	files := form.File["file"]
-	if files == nil || len(files) == 0 {
+	if len(files) == 0 {
 		errorMessage := "file error,file is null"
 		res.Message = errorMessage
 		res.Rescode = vojo.ERROR_RESPONSE_STATUS

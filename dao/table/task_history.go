@@ -11,7 +11,7 @@ type TaskExecHistory struct {
 	TaskCron   string `gorm:"type:longText;not null"`
 	TaskUrl    string `gorm:"type:varchar(255);not null"`
 
-	_Timestamp time.Time
+	Timestamp time.Time
 }
 
 func (p TaskExecHistory) TableName() string {

@@ -35,19 +35,19 @@ func SaveChunk(c *gin.Context) (string, error) {
 		return "", err
 	}
 	clientId := form.Value["clientId"]
-	if clientId == nil || len(clientId) == 0 || clientId[0] == "" {
+	if len(clientId) == 0 || clientId[0] == "" {
 		return "", fmt.Errorf("form value error,clientId is null")
 	}
 	chunkIndex := form.Value["index"]
-	if chunkIndex == nil || len(chunkIndex) == 0 || chunkIndex[0] == "" {
+	if len(chunkIndex) == 0 || chunkIndex[0] == "" {
 		return "", fmt.Errorf("form value error,index is null")
 	}
 	files := form.File["file"]
-	if files == nil || len(files) == 0 {
+	if len(files) == 0 {
 		return "", fmt.Errorf("form value error,file is null")
 	}
 	fileName := form.Value["fileName"]
-	if fileName == nil || len(fileName) == 0 {
+	if len(fileName) == 0 {
 		return "", fmt.Errorf("form value error,fileName is null")
 	}
 
@@ -82,12 +82,12 @@ func MergeChunk(c *gin.Context) error {
 		return err
 	}
 	clientId := form.Value["clientId"]
-	if clientId == nil || len(clientId) == 0 || clientId[0] == "" {
+	if len(clientId) == 0 || clientId[0] == "" {
 		return fmt.Errorf("form value error,clientId is null")
 	}
 
 	fileName := form.Value["fileName"]
-	if fileName == nil || len(fileName) == 0 {
+	if len(fileName) == 0 {
 		return fmt.Errorf("form value error,fileName is null")
 	}
 	isCreate, dst := util.CreateFile(FileSaveDir, clientId[0])
@@ -124,10 +124,10 @@ func MergeChunk(c *gin.Context) error {
 	for _, item := range realChunkFileList {
 		chunkPath := filepath.Join(dst, item.Name())
 		chunkFile, err := os.Open(chunkPath)
-		defer chunkFile.Close()
 		if err != nil {
 			return err
 		}
+		defer chunkFile.Close()
 
 		_, err = io.Copy(wt, chunkFile)
 		if err != nil {
@@ -202,7 +202,10 @@ func DownloadChunk(ctx *gin.Context) error {
 	}
 	defer file.Close()
 
-	io.Copy(ctx.Writer, file)
+	_, err = io.Copy(ctx.Writer, file)
+	if err != nil {
+		return err
+	}
 	ctx.Status(http.StatusOK)
 
 	log.Info("%s has down load over ", frontEndFileName)
@@ -246,7 +249,10 @@ func DownloadService(ctx *gin.Context) error {
 	}
 	defer file.Close()
 
-	io.Copy(ctx.Writer, file)
+	_, err = io.Copy(ctx.Writer, file)
+	if err != nil {
+		return err
+	}
 	ctx.Status(http.StatusOK)
 
 	log.Info("%s has down load over ", realName)
@@ -261,7 +267,7 @@ func GetFileList(clientId string) ([]string, error) {
 		return nil, err
 	}
 	fileList := make([]string, 0)
-	for key, _ := range res {
+	for key := range res {
 		fileLen := len(key)
 		fileStart := len(util.TimeFormatFirst + DefaultKeyCombineChar)
 		fileName := key[fileStart:fileLen]
@@ -310,7 +316,7 @@ func isFileExpire(fileKey string, fileName string) (bool, string) {
 		if err != nil {
 			return false, ""
 		} else {
-			for key, _ := range fileNameWithTimeMap {
+			for key := range fileNameWithTimeMap {
 				fileLen := len(key)
 				fileStart := len(util.TimeFormatFirst + DefaultKeyCombineChar)
 				itemFileName := key[fileStart:fileLen]
@@ -342,26 +348,26 @@ func saveCount(srcKey string, count int) error {
 
 }
 
-/**
- *
- * @Description
- * @Date 3:37 下午 2020/9/25
- **/
-func saveExpireTime(srcKey string, newFileName string) error {
-	err := redis.SetNX(DefaultExKeyPrefix+DefaultKeyCombineChar+srcKey, newFileName, time.Hour*24)
-	if err != nil {
-		log.Error("set redis  error:%v", err.Error())
-		return err
-	}
-	return nil
-}
+///**
+// *
+// * @Description
+// * @Date 3:37 下午 2020/9/25
+// **/
+//func saveExpireTime(srcKey string, newFileName string) error {
+//	err := redis.SetNX(DefaultExKeyPrefix+DefaultKeyCombineChar+srcKey, newFileName, time.Hour*24)
+//	if err != nil {
+//		log.Error("set redis  error:%v", err.Error())
+//		return err
+//	}
+//	return nil
+//}
 func saveFileTime(srcKey string, newFileName string) error {
 	err := redis.HSet(DefaultExKeyPrefix+DefaultKeyCombineChar+srcKey, newFileName, "-1")
 	if err != nil {
 		log.Error("set redis  error:%v", err.Error())
 		return err
 	}
-	redis.Expire(DefaultExKeyPrefix+DefaultKeyCombineChar+srcKey, time.Hour*24)
+	err = redis.Expire(DefaultExKeyPrefix+DefaultKeyCombineChar+srcKey, time.Hour*24)
 	if err != nil {
 		log.Error("set redis  error:%v", err.Error())
 		return err

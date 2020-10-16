@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go_backend/util"
 	"go_backend/vojo"
+	"os"
 	"testing"
 )
 
@@ -63,4 +64,5 @@ func TestMain(m *testing.M) {
 	fmt.Println("begin")
 	m.Run()
 	fmt.Println("end")
+	os.Exit(0)
 }

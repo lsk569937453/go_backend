@@ -9,9 +9,13 @@ import (
 func init() {
 	c := cron.New(cron.WithSeconds())
 	taslCron := "0 0 0/1 * * ? "
-	c.AddFunc(taslCron, func() {
+	_, err := c.AddFunc(taslCron, func() {
 		checkAndDelete()
 	})
+	if err != nil {
+		log.Error("AddFunc error:", err.Error())
+		return
+	}
 
 	c.Start()
 }

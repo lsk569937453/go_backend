@@ -50,9 +50,15 @@ func ValidateUrl(f1 validator.FieldLevel) bool { //验证字段的方法的定�
 
 func (u *TaskInsertReq) UserValidator() error { //自定义的验证函数，
 	validata := validator.New()
-	validata.RegisterValidation("cronExpression", ValidateCronExpression) //注册验证字段和字段验证的功能
-	validata.RegisterValidation("url", ValidateUrl)
-	err := validata.Struct(u)
+	err := validata.RegisterValidation("cronExpression", ValidateCronExpression) //注册验证字段和字段验证的功能
+	if err != nil {
+		return err
+	}
+	err = validata.RegisterValidation("url", ValidateUrl)
+	if err != nil {
+		return err
+	}
+	err = validata.Struct(u)
 	return err
 
 }

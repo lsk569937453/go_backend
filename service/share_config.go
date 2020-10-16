@@ -53,7 +53,6 @@ func useHomeDir() {
 		panic("create dir error")
 	}
 	log.Info("use the home dir:%s", FileSaveDir)
-	return
 }
 
 // 判断文件是否存在
@@ -62,10 +61,7 @@ func IsExist(fileAddr string) bool {
 	_, err := os.Stat(fileAddr)
 	if err != nil {
 		log.Error("IsExist error:%s", err.Error())
-		if os.IsExist(err) { // 根据错误类型进行判断
-			return true
-		}
-		return false
+		return os.IsExist(err)
 	}
 	return true
 }

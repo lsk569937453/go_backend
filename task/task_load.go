@@ -44,7 +44,10 @@ func startTask() {
 		cron := s.Task_cron
 		url := s.Url
 		taskId := s.Id
-		AddTask(cron, url, taskId)
+		err := AddTask(cron, url, taskId)
+		if err != nil {
+			log.Error("AddTask error:", err.Error())
+		}
 
 	}
 	//记录结束时间
@@ -61,7 +64,7 @@ func startTask() {
 
  * @Date 2:40 下午 2020/8/31
  **/
-func AddTask(cron string, url string, taskId int) {
+func AddTask(cron string, url string, taskId int) error {
 	id, err := cronJob.AddFunc(cron, func() {
 		dotask(url, taskId)
 	})
@@ -69,8 +72,10 @@ func AddTask(cron string, url string, taskId int) {
 	if err != nil {
 		errlog := fmt.Sprintf("AddTask error:%s,taskID:%d,cron:%s,url:%s", err.Error(), taskId, cron, url)
 		log.Error("", errlog)
+		return err
 	} else {
-		saveToRedis(taskId, id)
+		err := saveToRedis(taskId, id)
+		return err
 
 	}
 
@@ -99,10 +104,11 @@ func DeleteTask(taskId int) {
 /**
 save the mysqlID and taskID to redis
 */
-func saveToRedis(taskMysqlId int, taskLocalId cron.EntryID) {
+func saveToRedis(taskMysqlId int, taskLocalId cron.EntryID) error {
 	string1 := strconv.Itoa(taskMysqlId)
 	string2 := strconv.Itoa(int(taskLocalId))
-	redis.Set(string1, string2)
+	err := redis.Set(string1, string2)
+	return err
 }
 
 /**
@@ -115,7 +121,10 @@ func dotask(url string, taskId int) {
 	//new a gorotine to exec the data
 	go func() {
 		taskHistory := doReq(url, taskId)
-		dao.HistoryInsert(taskHistory)
+		err := dao.HistoryInsert(taskHistory)
+		if err != nil {
+			log.Error("HistoryInsert error", err.Error())
+		}
 	}()
 
 }
@@ -157,10 +166,16 @@ func FilterTask(taskList []vojo.TasksDao) []vojo.TasksDao {
 		_, _, err := fasthttp.Get(nil, url)
 		if err != nil {
 			log.Error("taskID:%d,taskUrl:%s could not send req,error:%s", item.Id, item.Url, err.Error())
-			dao.UpdateTaskStatusByTaskId(item.Id, vojo.RES_ERROR)
+			err := dao.UpdateTaskStatusByTaskId(item.Id, vojo.RES_ERROR)
+			if err != nil {
+				log.Error("UpdateTaskStatusByTaskId error", err.Error())
+			}
 			continue
 		} else {
-			dao.UpdateTaskStatusByTaskId(item.Id, vojo.RES_NORMAL)
+			err := dao.UpdateTaskStatusByTaskId(item.Id, vojo.RES_NORMAL)
+			if err != nil {
+				log.Error("UpdateTaskStatusByTaskId error", err.Error())
+			}
 
 		}
 		resultList = append(resultList, item)

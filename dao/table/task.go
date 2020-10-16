@@ -11,7 +11,7 @@ type Tasks struct {
 	ReqType    int    `gorm:"type:int;default 0;not null"`
 	TaskStatus int    `gorm:"type:int;default 0;not null"`
 
-	_Timestamp time.Time
+	Timestamp time.Time
 }
 
 func (p Tasks) TableName() string {

@@ -9,7 +9,6 @@ import (
 
 func TestDbPingSuccess(t *testing.T) {
 	router := gin.New()
-	const path = "/userRoleList"
 	router.GET("/api/db/dbPing", DbPing)
 	_, statusCode, err := util.Get("/api/db/dbPing", router)
 	assert.Equal(t, nil, err)

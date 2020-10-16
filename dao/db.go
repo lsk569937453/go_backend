@@ -24,7 +24,10 @@ var (
 var CronDb *sqlx.DB
 
 func init() {
-	initConfig()
+	err := initConfig()
+	if err != nil {
+		log.Error("initConfig error:", err.Error())
+	}
 	CronDb = InitDb()
 }
 func InitDb() *sqlx.DB {
@@ -43,6 +46,9 @@ func InitDb() *sqlx.DB {
 		panic(err)
 	}
 	err = db.AutoMigrate(&table.Tasks{})
+	if err != nil {
+		log.Error("AutoMigrate error", err.Error())
+	}
 	err = db.AutoMigrate(&table.TaskExecHistory{})
 	if err != nil {
 		panic(err)
@@ -50,15 +56,27 @@ func InitDb() *sqlx.DB {
 
 	return Db
 }
-func initConfig() {
+func initConfig() error {
 	userNameRes, err := config.GetValue("mysql", "username")
+	if err != nil {
+		return err
+	}
 	userName = userNameRes
 	passwordRes, err := config.GetValue("mysql", "password")
+	if err != nil {
+		return err
+	}
 	password = passwordRes
 	ipAddreesRes, err := config.GetValue("mysql", "ipAddrees")
+	if err != nil {
+		return err
+	}
 	ipAddrees = ipAddreesRes
 
 	portString, err := config.GetValue("mysql", "port")
+	if err != nil {
+		return err
+	}
 
 	portNew, err := strconv.Atoi(portString)
 	if err != nil {
@@ -67,4 +85,5 @@ func initConfig() {
 	} else {
 		port = portNew
 	}
+	return nil
 }

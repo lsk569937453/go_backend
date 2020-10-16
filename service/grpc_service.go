@@ -34,7 +34,7 @@ func GrpcGetServiceList(ipAndPortString string) (*vojo.GrpcRefServerInstanceForm
 	if err != nil {
 		log.Error("ListServices error%s", err.Error())
 	}
-	serviceInstanceMap := make(map[string]*vojo.GrpcRefService, 0)
+	serviceInstanceMap := make(map[string]*vojo.GrpcRefService)
 	result := &vojo.GrpcRefServerInstance{
 		Services: serviceInstanceMap,
 	}
@@ -64,7 +64,7 @@ func findAllServiceAndMethod(realServiceName string, refClient *grpcreflect.Clie
 		methodDescriptions := item.GetMethods()
 		//package+service
 		serviceName := item.GetFullyQualifiedName()
-		methodMap := make(map[string]*vojo.GrpcRefMethod, 0)
+		methodMap := make(map[string]*vojo.GrpcRefMethod)
 
 		serviceInstance := &vojo.GrpcRefService{
 			ServiceName: serviceName,
@@ -73,9 +73,9 @@ func findAllServiceAndMethod(realServiceName string, refClient *grpcreflect.Clie
 		_, ok := grpcServiceInstance.Services[serviceName]
 		if ok {
 			serviceInstance = grpcServiceInstance.Services[serviceName]
-		} else {
-			grpcServiceInstance.Services[serviceName] = serviceInstance
 		}
+		grpcServiceInstance.Services[serviceName] = serviceInstance
+
 		for _, methodDescItem := range methodDescriptions {
 			methodName := methodDescItem.GetName()
 			inputName := methodDescItem.GetInputType().GetFullyQualifiedName()
@@ -83,7 +83,7 @@ func findAllServiceAndMethod(realServiceName string, refClient *grpcreflect.Clie
 			methodInstance := &vojo.GrpcRefMethod{
 				MethodName: methodName,
 				InputName:  inputName,
-				Fields:     make(map[string]*vojo.GrpcRefField, 0),
+				Fields:     make(map[string]*vojo.GrpcRefField),
 			}
 
 			_, ok = grpcServiceInstance.Services[serviceName].Methods[methodName]
@@ -163,7 +163,11 @@ func callGrpc(ccReflect *grpc.ClientConn, methodDesc *desc.MethodDescriptor, req
 	msgFactory := dynamic.NewMessageFactoryWithExtensionRegistry(&ext)
 	stub := grpcdynamic.NewStubWithMessageFactory(ccReflect, msgFactory)
 	req := msgFactory.NewMessage(methodDesc.GetInputType())
-	jsonpb.Unmarshal(bytes.NewReader([]byte(reqBody)), req)
+	err := jsonpb.Unmarshal(bytes.NewReader([]byte(reqBody)), req)
+	if err != nil {
+		log.Error("Unmarshal error:", err.Error())
+		return ""
+	}
 
 	if methodDesc.IsServerStreaming() && methodDesc.IsClientStreaming() {
 

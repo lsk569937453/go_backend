@@ -23,6 +23,10 @@ func CallGrpc() {
 
 	// 调用gRPC接口
 	tr, err := t.Echo(context.Background(), &Empty{})
+	if err != nil {
+		log.Error("grpc call error:", err.Error())
+		return
+	}
 	for {
 		// stream 有一个最重要的方法，就是 Recv()，Recv 的返回值就是 *pb.StringMessage，这里面包含了多个 Ss []*StringSingle
 		data, err := tr.Recv()
