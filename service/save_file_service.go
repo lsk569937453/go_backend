@@ -51,7 +51,8 @@ func SaveChunk(c *gin.Context) (string, error) {
 		return "", fmt.Errorf("form value error,fileName is null")
 	}
 
-	isCreate, dst := util.CreateFile(FileSaveDir, clientId[0])
+	folder := filepath.Join(FileSaveDir, clientId[0])
+	isCreate, dst := util.CreateFile(folder, fileName[0])
 	if !isCreate {
 		err := fmt.Errorf("CreateFile error")
 		log.Error("SaveFile error ", err)
@@ -261,19 +262,38 @@ func DownloadService(ctx *gin.Context) error {
 }
 
 func GetFileList(clientId string) ([]string, error) {
-	res, err := redis.HGetAll(DefaultExKeyPrefix + DefaultKeyCombineChar + clientId)
 
-	if err != nil {
-		return nil, err
-	}
-	fileList := make([]string, 0)
-	for key := range res {
-		fileLen := len(key)
-		fileStart := len(util.TimeFormatFirst + DefaultKeyCombineChar)
-		fileName := key[fileStart:fileLen]
-		fileList = append(fileList, fileName)
-	}
+	folder := filepath.Join(FileSaveDir, clientId)
+	fileList, err := getDirList(folder)
+
 	return fileList, err
+}
+func getDirList(dirpath string) ([]string, error) {
+	var dir_list []string
+	dir_err := filepath.Walk(dirpath,
+		func(path string, f os.FileInfo, err error) error {
+			if f == nil {
+				return err
+			}
+			if f.IsDir() && path != dirpath {
+				dir_list = append(dir_list, f.Name())
+				return nil
+			}
+
+			return nil
+		})
+	return dir_list, dir_err
+}
+func GetChunkList(ctx *gin.Context) ([]string, error) {
+	clientId := ctx.Query("clientId")
+	fileName := ctx.Query("fileName")
+	if clientId == "" || fileName == "" {
+		return nil, fmt.Errorf("GetChunkList error,clientId or fileName is null ")
+	}
+	realPath := filepath.Join(FileSaveDir, clientId, fileName)
+	fileNameList, err := util.GetFilesFromDir(realPath)
+	return fileNameList, err
+
 }
 
 /**

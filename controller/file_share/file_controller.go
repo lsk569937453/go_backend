@@ -101,6 +101,18 @@ func DownloadFile(ctx *gin.Context) {
 	}
 
 }
+func GetChunkList(ctx *gin.Context) {
+	var res vojo.BaseRes
+	fileList, err := service.GetChunkList(ctx)
+	if err != nil {
+		res.Message = err.Error()
+		res.Rescode = vojo.ERROR_RESPONSE_STATUS
+	} else {
+		res.Message = fileList
+	}
+	ctx.JSON(http.StatusOK, res)
+
+}
 func DownloadChunk(ctx *gin.Context) {
 
 	err := service.DownloadChunk(ctx)
